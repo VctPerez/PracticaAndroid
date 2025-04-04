@@ -19,7 +19,8 @@ private val DarkColorScheme = darkColorScheme(
     surface = Color(0xFF414855),
     onSurface = IberGreen,
     background = Color.White,
-    onBackground = IberGreen
+    onBackground = IberGreen,
+    error = Color.Red
 
     )
 
@@ -30,7 +31,8 @@ private val LightColorScheme = lightColorScheme(
     surface = Color(0xFFFFFBFE),
     onSurface = Color(0xFF90BF43),
     background = Color.White,
-    onBackground = Color.Black
+    onBackground = Color.Black,
+    error = Color.Red
     /*Other default colors to override
     background = Color(0xFFFFFBFE),
     onPrimary = Color.White,

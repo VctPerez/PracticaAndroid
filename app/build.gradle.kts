@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.retrofit)
     implementation(libs.retromock)
+    implementation(libs.kotlinx.serialization.json)
     runtimeOnly(libs.androidx.material.icons.extended)
 
     testImplementation(libs.junit)
