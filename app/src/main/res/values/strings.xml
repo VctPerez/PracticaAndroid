@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PracticaAndroid</string>
+    <string name="invoicelist_title">Invoices</string>
 </resources>
