@@ -14,5 +14,6 @@
     <string name="november_abr">Nov</string>
     <string name="december_abr">Dec</string>
     <string name="invoice_not_paid">Pending to be paid</string>
+    <string name="invoice_filter">Invoice Filter</string>
 
 </resources>

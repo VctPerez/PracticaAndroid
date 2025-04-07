@@ -15,4 +15,5 @@
     <string name="november_abr">Nov</string>
     <string name="december_abr">Dic</string>
     <string name="invoice_not_paid">Pendiente de pago</string>
+    <string name="invoice_filter">Filtrar Facturas</string>
 </resources>

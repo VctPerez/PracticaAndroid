@@ -1,5 +1,6 @@
 package com.viewnext.practicaandroid.core
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,7 +12,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.viewnext.practicaandroid.core.ui.CustomTopBar
+import com.viewnext.practicaandroid.core.ui.screens.InvoiceListScreen
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
+import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceListViewModel
+import com.viewnext.practicaandroid.domain.repository.OfflineInvoiceRepository
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,14 +24,18 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PracticaAndroidTheme(dynamicColor = false) {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                MainScreen()
             }
         }
+    }
+}
+
+@Composable
+fun MainScreen(){
+    Scaffold(modifier = Modifier.fillMaxSize(),
+        topBar = {CustomTopBar("Practica", false)})
+    {innerPadding ->
+        InvoiceListScreen(InvoiceListViewModel(OfflineInvoiceRepository()), Modifier.padding(innerPadding))
     }
 }
 
@@ -38,10 +47,10 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showSystemUi = true)
 @Composable
 fun GreetingPreview() {
-    PracticaAndroidTheme {
-        Greeting("Android")
+    PracticaAndroidTheme(dynamicColor = false) {
+        MainScreen()
     }
 }
