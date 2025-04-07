@@ -9,18 +9,18 @@ interface InvoiceRepository {
 class OfflineInvoiceRepository : InvoiceRepository {
     override suspend fun getInvoices(): List<InvoiceEntity> {
         return listOf(
-            InvoiceEntity("2023-10-01", 100.0, "Pagado"),
-            InvoiceEntity("2023-10-02", 200.0, "Pendiente"),
-            InvoiceEntity("2023-10-03", 300.0, "Anulado"),
-            InvoiceEntity("2023-10-04", 400.0, "Pagado"),
-            InvoiceEntity("2023-10-05", 500.0, "Pendiente"),
-            InvoiceEntity("2023-10-06", 600.0, "Anulado"),
-            InvoiceEntity("2023-10-07", 700.0, "Pagado"),
-            InvoiceEntity("2023-10-08", 800.0, "Pendiente"),
-            InvoiceEntity("2023-10-09", 900.0, "Anulado"),
-            InvoiceEntity("2023-10-10", 1000.0, "Pagado"),
-            InvoiceEntity("2023-10-11", 1100.0, "Pendiente"),
-            InvoiceEntity("2023-10-12", 1200.0, "Anulado"),
+            InvoiceEntity("01/10/2023", 100.0, "Pagada"),
+            InvoiceEntity("02/10/2023", 200.0, "Pendiente"),
+            InvoiceEntity("03/10/2023", 300.0, "Anulado"),
+            InvoiceEntity("04/10/2023", 400.0, "Pagada"),
+            InvoiceEntity("05/10/2023", 500.0, "Pendiente"),
+            InvoiceEntity("06/10/2023", 600.0, "Anulado"),
+            InvoiceEntity("07/10/2023", 700.0, "Pagada"),
+            InvoiceEntity("08/10/2023", 800.0, "Pendiente"),
+            InvoiceEntity("09/10/2023", 900.0, "Anulado"),
+            InvoiceEntity("10/10/2023", 1000.0, "Pagada"),
+            InvoiceEntity("11/10/2023", 1100.0, "Pendiente"),
+            InvoiceEntity("12/10/2023", 1200.0, "Anulado"),
         )
     }
 }

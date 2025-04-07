@@ -2,9 +2,6 @@ package com.viewnext.practicaandroid.core.ui.screens
 
 import android.annotation.SuppressLint
 import android.content.res.Resources
-import android.widget.Space
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,9 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,26 +22,27 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.viewnext.practicaandroid.R
 import com.viewnext.practicaandroid.core.ui.CustomTopBar
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
+import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceListViewModel
 import com.viewnext.practicaandroid.domain.data.InvoiceEntity
 import com.viewnext.practicaandroid.domain.repository.OfflineInvoiceRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun InvoiceListScreen(){
+fun InvoiceListScreen(viewModel: InvoiceListViewModel){
+
+    val invoices = viewModel.invoices
+
     Scaffold(
         topBar = { CustomTopBar("Consumo", true) }
     ){innerPadding ->
-        Box(modifier = Modifier.fillMaxSize().padding(start = 22.dp)){
+        Column(modifier = Modifier.fillMaxSize().padding(start = 22.dp)){
             Text(stringResource(R.string.invoicelist_title), style = MaterialTheme.typography.titleLarge ,
                 modifier = Modifier.padding(innerPadding))
             InvoiceList(invoices,modifier = Modifier.padding(innerPadding))
@@ -64,32 +61,38 @@ fun InvoiceList(invoices : List<InvoiceEntity>, modifier: Modifier = Modifier){
 
 @Composable
 fun InvoiceItem(invoice : InvoiceEntity, modifier: Modifier = Modifier){
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-        Column {
-            Text(invoice.parseDate())
-            if(invoice.status != "Pagada"){
-                Text(stringResource(R.string.invoice_not_paid),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyLarge)
+    Column(modifier = Modifier.fillMaxWidth()){
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
+            .padding(top = 5.dp, bottom = 5.dp))
+        {
+            Column {
+                Text(invoice.parseDate())
+                if(invoice.status.lowercase() != "pagada"){
+                    Text(stringResource(R.string.invoice_not_paid),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodyLarge)
+                }
+            }
+            Spacer(Modifier.weight(1f))
+            Text(invoice.parseAmount())
+            IconButton(onClick = { TODO()}) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "Arrow",
+                    modifier = Modifier.size(35.dp).padding(0.dp),
+                )
             }
         }
-        Spacer(Modifier.weight(1f))
-        Text(invoice.parseAmount())
-        IconButton(onClick = { TODO()}) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Arrow",
-                modifier = Modifier.size(35.dp).padding(0.dp),
-            )
-        }
+        HorizontalDivider(color = Color.LightGray, thickness = 1.dp)
     }
+
 }
 
 @Preview(showSystemUi = true)
 @Composable
 fun InvoiceListScreenPreview(){
     PracticaAndroidTheme(dynamicColor = false) {
-        InvoiceListScreen()
+        InvoiceListScreen(InvoiceListViewModel(OfflineInvoiceRepository()))
     }
 }
 
