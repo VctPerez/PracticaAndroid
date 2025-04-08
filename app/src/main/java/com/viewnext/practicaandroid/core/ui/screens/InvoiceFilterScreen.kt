@@ -54,8 +54,8 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun InvoiceFilterScreen() {
-    Column(modifier = Modifier
+fun InvoiceFilterScreen(modifier: Modifier = Modifier) {
+    Column(modifier = modifier
         .fillMaxSize()
         .padding(start = 22.dp, end = 22.dp)){
         Text(stringResource(R.string.invoice_filter), style = MaterialTheme.typography.titleLarge)

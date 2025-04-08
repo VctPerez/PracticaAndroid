@@ -13,7 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.viewnext.practicaandroid.core.ui.CustomTopBar
+import com.viewnext.practicaandroid.core.ui.screens.InvoiceFilterScreen
 import com.viewnext.practicaandroid.core.ui.screens.InvoiceListScreen
+import com.viewnext.practicaandroid.core.ui.screens.SmartSolarScreen
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceListViewModel
 import com.viewnext.practicaandroid.domain.repository.OfflineInvoiceRepository
@@ -35,22 +37,32 @@ fun MainScreen(){
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {CustomTopBar("Practica", false)})
     {innerPadding ->
-        InvoiceListScreen(InvoiceListViewModel(OfflineInvoiceRepository()), Modifier.padding(innerPadding))
+        SmartSolarScreen(Modifier.padding(innerPadding))
+    //InvoiceListScreen(InvoiceListViewModel(OfflineInvoiceRepository()), Modifier.padding(innerPadding))
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun FilterScreen(name: String, modifier: Modifier = Modifier) {
+    Scaffold(modifier = Modifier.fillMaxSize(),
+        topBar = {CustomTopBar("Practica", false)})
+    {innerPadding ->
+        InvoiceFilterScreen(Modifier.padding(innerPadding))
+    }
 }
 
 @Preview(showSystemUi = true)
 @Composable
-fun GreetingPreview() {
+fun ListPreview() {
     PracticaAndroidTheme(dynamicColor = false) {
         MainScreen()
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun FilterPreview() {
+    PracticaAndroidTheme(dynamicColor = false) {
+        FilterScreen("Practica")
     }
 }

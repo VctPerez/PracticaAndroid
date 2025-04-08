@@ -28,7 +28,7 @@ private val LightColorScheme = lightColorScheme(
     primary = IberGreen,
     secondary = PurpleGrey40,
     tertiary = Pink40,
-    surface = Color(0xFFFFFBFE),
+    surface = Color.White,
     onSurface = Color(0xFF90BF43),
     background = Color.White,
     onBackground = Color.Black,
@@ -48,7 +48,7 @@ private val LightColorScheme = lightColorScheme(
 fun PracticaAndroidTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
