@@ -11,12 +11,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -32,15 +36,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.viewnext.practicaandroid.R
+import com.viewnext.practicaandroid.core.ui.theme.InfoBlue
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 
 @Composable
 fun SmartSolarScreen(modifier: Modifier = Modifier){
 
     val tabs = listOf("Mi instalacion", "Energía", "Detalles")
-    var selectedTabIndex by remember { mutableIntStateOf(1) }
+    var selectedTabIndex by remember { mutableIntStateOf(2) }
 
     Column(modifier = modifier.padding(start = 22.dp, end = 30.dp)) {
+        Text("Smart Solar",
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleLarge
+        )
+        Spacer(Modifier.size(25.dp))
         ScrollableTabRow(selectedTabIndex = selectedTabIndex,
             modifier = Modifier.wrapContentWidth(align = Alignment.Start),
             edgePadding = 0.dp, contentColor = MaterialTheme.colorScheme.onBackground) {
@@ -118,9 +128,50 @@ fun EnergyTab(){
 
 @Composable
 fun DetailsTab(){
-    Column {
-        TODO()
+    Column(modifier = Modifier.fillMaxWidth().padding(top = 30.dp),){
+        DetailsTextField("", {}, "CAU (Código Autoconsumo)")
+        DetailsTextField("", {}, "Estado solicitud alta consumidor", info = true)
+        DetailsTextField("", {}, "Tipo autoconsumo")
+        DetailsTextField("", {}, "Compensación de excedentes")
+        DetailsTextField("", {}, "Potencia de instalación")
     }
+}
+
+@Composable
+fun DetailsTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier,
+    info : Boolean = false
+) {
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        modifier = modifier.fillMaxWidth().padding(bottom = 15.dp),
+        colors = TextFieldDefaults.colors(
+            disabledContainerColor = Color.Transparent,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            unfocusedLabelColor = Color.Gray,
+            focusedLabelColor = Color.Gray,
+            unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+            focusedIndicatorColor = Color.Gray,
+            unfocusedIndicatorColor = Color.Gray
+        ),
+        trailingIcon = {
+            if (info) {
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = "Info",
+                    modifier = Modifier.size(33.dp),
+                    tint = InfoBlue
+                )
+            }
+        }
+    )
 }
 
 @Composable
