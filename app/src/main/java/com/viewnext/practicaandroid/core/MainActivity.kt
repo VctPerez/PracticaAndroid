@@ -37,8 +37,8 @@ fun MainScreen(){
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {CustomTopBar("Practica", false)})
     {innerPadding ->
-        SmartSolarScreen(Modifier.padding(innerPadding))
-    //InvoiceListScreen(InvoiceListViewModel(OfflineInvoiceRepository()), Modifier.padding(innerPadding))
+        //SmartSolarScreen(Modifier.padding(innerPadding))
+        InvoiceListScreen(Modifier.padding(innerPadding))
     }
 }
 
