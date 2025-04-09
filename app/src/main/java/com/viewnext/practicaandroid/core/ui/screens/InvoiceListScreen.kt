@@ -21,6 +21,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,21 +35,24 @@ import com.viewnext.practicaandroid.core.ui.CustomTopBar
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceListViewModel
 import com.viewnext.practicaandroid.domain.data.InvoiceEntity
-import com.viewnext.practicaandroid.domain.repository.OfflineInvoiceRepository
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun InvoiceListScreen(viewModel: InvoiceListViewModel, modifier: Modifier = Modifier) {
-    val invoices = viewModel.invoices
+fun InvoiceListScreen(modifier: Modifier = Modifier) {
+    val viewModel : InvoiceListViewModel = viewModel(factory = InvoiceListViewModel.Factory)
+    val state by viewModel.uiState.collectAsState()
+
     Column(modifier = modifier.fillMaxSize().padding(start = 22.dp)){
         Text(stringResource(R.string.invoicelist_title), style = MaterialTheme.typography.titleLarge)
-        InvoiceList(invoices)
+        //TODO: Add loading and error screen
+        InvoiceList(state.invoices)
     }
 }
 
 @Composable
 fun InvoiceList(invoices : List<InvoiceEntity>, modifier: Modifier = Modifier){
-    LazyColumn {
+    LazyColumn(modifier = modifier.padding(top = 40.dp)){
         items(invoices){
             InvoiceItem(it)
         }
@@ -87,7 +92,7 @@ fun InvoiceItem(invoice : InvoiceEntity, modifier: Modifier = Modifier){
 @Composable
 fun InvoiceListScreenPreview(){
     PracticaAndroidTheme(dynamicColor = false) {
-        InvoiceListScreen(InvoiceListViewModel(OfflineInvoiceRepository()))
+        InvoiceListScreen()
     }
 }
 

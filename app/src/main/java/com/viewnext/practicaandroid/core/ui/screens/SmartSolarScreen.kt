@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,15 +36,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.viewnext.practicaandroid.R
 import com.viewnext.practicaandroid.core.ui.theme.InfoBlue
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
+import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceListViewModel
+import com.viewnext.practicaandroid.core.ui.viewmodel.UserViewModel
+import com.viewnext.practicaandroid.domain.data.UserDetailsEntity
 
 @Composable
 fun SmartSolarScreen(modifier: Modifier = Modifier){
 
     val tabs = listOf("Mi instalacion", "Energía", "Detalles")
     var selectedTabIndex by remember { mutableIntStateOf(2) }
+
+    val viewModel : UserViewModel = viewModel(factory = UserViewModel.Factory)
+    val state by viewModel.state.collectAsState()
 
     Column(modifier = modifier.padding(start = 22.dp, end = 30.dp)) {
         Text("Smart Solar",
@@ -66,7 +74,7 @@ fun SmartSolarScreen(modifier: Modifier = Modifier){
         when (selectedTabIndex) {
             0 -> InstalationTab()
             1 -> EnergyTab()
-            2 -> DetailsTab()
+            2 -> DetailsTab(state.userDetails)
         }
     }
 }
@@ -127,13 +135,13 @@ fun EnergyTab(){
 }
 
 @Composable
-fun DetailsTab(){
+fun DetailsTab(userDetails: UserDetailsEntity){
     Column(modifier = Modifier.fillMaxWidth().padding(top = 30.dp),){
-        DetailsTextField("", {}, "CAU (Código Autoconsumo)")
-        DetailsTextField("", {}, "Estado solicitud alta consumidor", info = true)
-        DetailsTextField("", {}, "Tipo autoconsumo")
-        DetailsTextField("", {}, "Compensación de excedentes")
-        DetailsTextField("", {}, "Potencia de instalación")
+        DetailsTextField(userDetails.cau, {}, "CAU (Código Autoconsumo)")
+        DetailsTextField(userDetails.requestStatus, {}, "Estado solicitud alta consumidor", info = true)
+        DetailsTextField(userDetails.type, {}, "Tipo autoconsumo")
+        DetailsTextField(userDetails.compensation, {}, "Compensación de excedentes")
+        DetailsTextField(userDetails.installationPower, {}, "Potencia de instalación")
     }
 }
 
