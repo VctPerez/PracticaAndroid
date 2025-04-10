@@ -155,6 +155,7 @@ fun DetailsTextField(
 ) {
     TextField(
         value = value,
+        enabled = false,
         onValueChange = onValueChange,
         label = { Text(label) },
         modifier = modifier.fillMaxWidth().padding(bottom = 15.dp),
@@ -164,8 +165,10 @@ fun DetailsTextField(
             unfocusedContainerColor = Color.Transparent,
             unfocusedLabelColor = Color.Gray,
             focusedLabelColor = Color.Gray,
+            disabledLabelColor = Color.Gray,
             unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
             focusedTextColor = MaterialTheme.colorScheme.onBackground,
+            disabledTextColor = MaterialTheme.colorScheme.onBackground,
             focusedIndicatorColor = Color.Gray,
             unfocusedIndicatorColor = Color.Gray
         ),

@@ -3,15 +3,11 @@
 package com.viewnext.practicaandroid.core.ui
 
 import android.content.res.Configuration
-import android.widget.DatePicker
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,9 +21,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.viewnext.practicaandroid.R
@@ -37,12 +31,13 @@ import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 @Composable
 fun CustomTopBar(
     title : String,
-    filter : Boolean,
+    onInvoiceList : Boolean,
+    onFilter : Boolean = false,
     onBackButtonClick : () -> Unit = {},
     navigateToFilter : () -> Unit = {}
 ) {
     TopAppBar(
-        navigationIcon = {
+        navigationIcon = { if(!onFilter) {
             IconButton(onClick = onBackButtonClick) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
@@ -50,19 +45,27 @@ fun CustomTopBar(
                     modifier = Modifier.size(35.dp).padding(0.dp),
                 )
             }
+        }
         },
-        title = { Text(title, style = MaterialTheme.typography.titleMedium) },
+        title = { if(!onFilter){Text(title, style = MaterialTheme.typography.titleMedium)}},
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surface,
             titleContentColor = MaterialTheme.colorScheme.onSurface,
             navigationIconContentColor = MaterialTheme.colorScheme.onSurface
         ),
         actions = {
-            if (filter) {
+            if (onInvoiceList) {
                 IconButton(onClick = navigateToFilter) {
                     Image(
                         painter = painterResource(R.drawable.filtericon_3x),
                         contentDescription = "Filter",
+                    )
+                }
+            }else if(onFilter){
+                IconButton(onClick = onBackButtonClick) {
+                    Image(
+                        painter = painterResource(R.drawable.close_icon),
+                        contentDescription = "Back",
                     )
                 }
             }
