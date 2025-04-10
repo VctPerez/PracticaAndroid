@@ -10,15 +10,7 @@ interface UserApiService {
     @GET("details")
     @Mock
     @MockResponse(
-        body = """
-            {
-                "cau": "ES0021000000001994LJ1FA000",
-                "requestStatus": "No hemos recibido ninguna solicitud de autoconsumo",
-                "type": "Con excendentes y compensación individual - Consumo",
-                "compensation": "Precio PVPC",
-                "installationPower": "5kWp"
-            }
-        """
+        body = "details.json",
     )
     suspend fun getUserDetails(): UserDetailsEntity
 
