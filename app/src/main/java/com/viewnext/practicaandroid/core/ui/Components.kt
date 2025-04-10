@@ -35,10 +35,15 @@ import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTopBar(title : String, filter : Boolean){
+fun CustomTopBar(
+    title : String,
+    filter : Boolean,
+    onBackButtonClick : () -> Unit = {},
+    navigateToFilter : () -> Unit = {}
+) {
     TopAppBar(
         navigationIcon = {
-            IconButton(onClick = { TODO() }) {
+            IconButton(onClick = onBackButtonClick) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                     contentDescription = "Back",
@@ -54,7 +59,7 @@ fun CustomTopBar(title : String, filter : Boolean){
         ),
         actions = {
             if (filter) {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = navigateToFilter) {
                     Image(
                         painter = painterResource(R.drawable.filtericon_3x),
                         contentDescription = "Filter",

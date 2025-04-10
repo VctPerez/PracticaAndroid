@@ -48,7 +48,7 @@ import com.viewnext.practicaandroid.domain.data.UserDetailsEntity
 fun SmartSolarScreen(modifier: Modifier = Modifier){
 
     val tabs = listOf("Mi instalacion", "Energía", "Detalles")
-    var selectedTabIndex by remember { mutableIntStateOf(2) }
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     val viewModel : UserViewModel = viewModel(factory = UserViewModel.Factory)
     val state by viewModel.state.collectAsState()

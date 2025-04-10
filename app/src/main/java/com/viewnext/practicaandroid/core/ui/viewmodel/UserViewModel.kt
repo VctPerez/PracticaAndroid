@@ -1,5 +1,6 @@
 package com.viewnext.practicaandroid.core.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -31,8 +32,11 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
             _state.update { it.copy(loading = true) }
             try {
                 val userDetails = repository.getUserDetails()
+                Log.d("UserDetails", userDetails.toString())
                 _state.update { it.copy(userDetails = userDetails) }
             } catch (e: Exception) {
+                Log.e("ErrorType", e::class.simpleName ?: "Unknown")
+                Log.e("Error", e.message.toString())
                 _state.update { it.copy(error = e.message) }
             }
         }

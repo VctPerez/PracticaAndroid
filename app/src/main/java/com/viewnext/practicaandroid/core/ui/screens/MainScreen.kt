@@ -38,14 +38,18 @@ import com.viewnext.practicaandroid.core.ui.theme.LightIberGreen
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
+fun MainScreen(
+    modifier: Modifier = Modifier,
+    navigateToInvoiceList: () -> Unit = {},
+    navigateToSmartSolar: () -> Unit = {}
+) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
             RetromockActionButton()
         }
     ) {innerPadding ->
-        Column(modifier = modifier.fillMaxSize().background(LightIberGreen).padding(innerPadding),
+        Column(modifier = modifier.fillMaxSize().padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
                 painter = painterResource(R.drawable.logo),
@@ -53,9 +57,15 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.size(350.dp)
             )
             MainScreenButton("Lista de facturas",
-                containerColor = IberBlue, modifier = Modifier.weight(0.5f))
+                containerColor = IberBlue,
+                modifier = Modifier.weight(0.5f),
+                onClick = navigateToInvoiceList
+            )
             MainScreenButton("Smart Solar",
-                containerColor = IberOrange, modifier = Modifier.weight(1f))
+                containerColor = IberOrange,
+                modifier = Modifier.weight(1f),
+                onClick = navigateToSmartSolar
+            )
 
         }
     }
@@ -87,9 +97,14 @@ fun RetromockActionButton() =
 
 
 @Composable
-fun MainScreenButton(text : String, modifier: Modifier = Modifier, containerColor: Color) {
+fun MainScreenButton(
+    text : String,
+    modifier: Modifier = Modifier,
+    containerColor: Color,
+    onClick: () -> Unit = {}
+    ) {
     ElevatedButton(
-        onClick = { /*TODO*/ },
+        onClick = onClick,
         content = {
             Text(text, style = MaterialTheme.typography.titleMedium)
         },
