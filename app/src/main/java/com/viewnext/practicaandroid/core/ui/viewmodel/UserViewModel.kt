@@ -8,8 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.viewnext.practicaandroid.core.PracticaAndroidApplication
-import com.viewnext.practicaandroid.domain.data.UserDetailsEntity
-import com.viewnext.practicaandroid.domain.repository.InvoiceRepository
+import com.viewnext.practicaandroid.domain.data.UserDetailsResponse
 import com.viewnext.practicaandroid.domain.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +20,7 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     data class UiState(
         val loading : Boolean = false,
         val error : String? = null,
-        val userDetails : UserDetailsEntity = UserDetailsEntity()
+        val userDetails : UserDetailsResponse = UserDetailsResponse()
     )
 
     private var _state = MutableStateFlow(UiState())

@@ -3,7 +3,7 @@ package com.viewnext.practicaandroid.domain.data
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UserDetailsEntity(
+data class UserDetailsResponse(
     val cau : String = "",
     val requestStatus: String = "",
     val type: String = "",

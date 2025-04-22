@@ -1,12 +1,10 @@
 package com.viewnext.practicaandroid.core.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -25,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -40,9 +36,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.viewnext.practicaandroid.R
 import com.viewnext.practicaandroid.core.ui.theme.InfoBlue
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
-import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceListViewModel
 import com.viewnext.practicaandroid.core.ui.viewmodel.UserViewModel
-import com.viewnext.practicaandroid.domain.data.UserDetailsEntity
+import com.viewnext.practicaandroid.domain.data.UserDetailsResponse
 
 @Composable
 fun SmartSolarScreen(modifier: Modifier = Modifier){
@@ -135,7 +130,7 @@ fun EnergyTab(){
 }
 
 @Composable
-fun DetailsTab(userDetails: UserDetailsEntity){
+fun DetailsTab(userDetails: UserDetailsResponse){
     Column(modifier = Modifier.fillMaxWidth().padding(top = 30.dp),){
         DetailsTextField(userDetails.cau, {}, "CAU (Código Autoconsumo)")
         DetailsTextField(userDetails.requestStatus, {}, "Estado solicitud alta consumidor", info = true)

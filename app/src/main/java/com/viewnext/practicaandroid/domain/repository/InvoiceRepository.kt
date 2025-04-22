@@ -1,8 +1,11 @@
 package com.viewnext.practicaandroid.domain.repository
 
+import android.util.Log
+import com.viewnext.practicaandroid.core.db.dao.InvoiceDao
 import com.viewnext.practicaandroid.dataretrofit.service.InvoiceApiService
-import com.viewnext.practicaandroid.domain.data.InvoiceEntity
+import com.viewnext.practicaandroid.core.db.entity.InvoiceEntity
 import com.viewnext.practicaandroid.domain.data.InvoicesResponse
+import kotlinx.coroutines.flow.first
 
 interface InvoiceRepository {
     suspend fun getInvoices(): InvoicesResponse
@@ -16,7 +19,44 @@ class NetworkInvoiceRepository(
     }
 }
 
-class OfflineInvoiceRepository : InvoiceRepository {
+class InvoiceRepositoryWrapper(
+    private val offlineInvoiceRepository: OfflineInvoiceRepository,
+    private val networkInvoiceRepository: NetworkInvoiceRepository,
+    private val firstLoad : Boolean = true
+) : InvoiceRepository {
+
+    override suspend fun getInvoices(): InvoicesResponse {
+        if(firstLoad) {
+            Log.d("", "firstLoad")
+            val invoicesResponse = networkInvoiceRepository.getInvoices()
+            offlineInvoiceRepository.insertInvoices(invoicesResponse.invoices)
+            return invoicesResponse
+        }else{
+            Log.d("", "offline")
+            return offlineInvoiceRepository.getInvoices()
+        }
+    }
+}
+
+class OfflineInvoiceRepository(
+    private val invoiceDao: InvoiceDao
+) : InvoiceRepository {
+    override suspend fun getInvoices(): InvoicesResponse {
+        return InvoicesResponse(
+            invoices = invoiceDao.getAllInvoices().first(),
+            total = 0,
+        )
+    }
+
+    suspend fun insertInvoices(invoices: List<InvoiceEntity>) {
+        invoiceDao.deleteAllInvoices()
+        for (invoice in invoices) {
+            invoiceDao.insertInvoice(invoice)
+        }
+    }
+}
+
+class TestInvoiceRepository : InvoiceRepository {
     override suspend fun getInvoices(): InvoicesResponse{
         val invoices = listOf(
             InvoiceEntity("01/10/2023", 100.0, "Pagada"),

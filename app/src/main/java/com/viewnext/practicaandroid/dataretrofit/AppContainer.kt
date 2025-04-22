@@ -4,11 +4,14 @@ import android.content.Context
 import androidx.compose.ui.platform.LocalContext
 import co.infinum.retromock.Retromock
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.viewnext.practicaandroid.core.db.InvoiceDatabase
 import com.viewnext.practicaandroid.dataretrofit.service.InvoiceApiService
 import com.viewnext.practicaandroid.dataretrofit.service.UserApiService
 import com.viewnext.practicaandroid.domain.repository.InvoiceRepository
+import com.viewnext.practicaandroid.domain.repository.InvoiceRepositoryWrapper
 import com.viewnext.practicaandroid.domain.repository.MockUserRepository
 import com.viewnext.practicaandroid.domain.repository.NetworkInvoiceRepository
+import com.viewnext.practicaandroid.domain.repository.OfflineInvoiceRepository
 import com.viewnext.practicaandroid.domain.repository.UserRepository
 import kotlinx.serialization.json.Json
 import retrofit2.Retrofit
@@ -36,7 +39,10 @@ class DefaultAppContainer(private val context : Context) : AppContainer{
     }
 
     override val invoiceRepository: InvoiceRepository by lazy {
-        NetworkInvoiceRepository(invoiceApiService)
+        InvoiceRepositoryWrapper(
+            OfflineInvoiceRepository(InvoiceDatabase.getDatabase(context).invoiceDao()),
+            NetworkInvoiceRepository(invoiceApiService)
+        )
     }
 
     private val userApiService: UserApiService by lazy {
