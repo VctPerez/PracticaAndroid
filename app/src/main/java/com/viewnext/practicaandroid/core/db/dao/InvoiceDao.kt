@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface InvoiceDao {
 
-    @Insert(onConflict = androidx.room.OnConflictStrategy.REPLACE)
+    @Insert(onConflict = androidx.room.OnConflictStrategy.IGNORE)
     suspend fun insertInvoice(invoice: InvoiceEntity)
 
     @Delete

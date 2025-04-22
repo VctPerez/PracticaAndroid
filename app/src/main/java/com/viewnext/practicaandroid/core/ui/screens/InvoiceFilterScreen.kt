@@ -3,10 +3,10 @@
 package com.viewnext.practicaandroid.core.ui.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,22 +14,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
@@ -45,35 +43,59 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.viewnext.practicaandroid.R
 import com.viewnext.practicaandroid.core.ui.DatePickerModal
 import com.viewnext.practicaandroid.core.ui.theme.IberGreen
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
+import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceFilterViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun InvoiceFilterScreen(modifier: Modifier = Modifier) {
+    val scrollState = rememberScrollState()
+    val viewModel : InvoiceFilterViewModel = viewModel(factory = InvoiceFilterViewModel.Factory)
+    val state by viewModel.uiState.collectAsState()
+
+    Log.d("filtro: ", state.toString())
+
     Column(modifier = modifier
         .fillMaxSize()
-        .padding(start = 22.dp, end = 22.dp)){
+        .padding(start = 22.dp, end = 22.dp)
+        .verticalScroll(scrollState))
+    {
         Text(stringResource(R.string.invoice_filter), style = MaterialTheme.typography.titleLarge)
-        DateRangeInvoiceFilter()
+        DateRangeInvoiceFilter(viewModel)
         FilterDivider()
-        RangeSliderAmount(0f, 0f..300f)
+        RangeSliderAmount(0f..300f, viewModel)
         FilterDivider()
-        StatusFilter()
+        StatusFilter(viewModel)
         Spacer(Modifier.size(50.dp))
-        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-            Button(onClick = { TODO()}, colors = ButtonColors(
-                containerColor = IberGreen,
-                contentColor = Color.White,
-                disabledContainerColor = Color.Gray,
-                disabledContentColor = Color.White,
-            ), modifier = Modifier.padding(bottom = 20.dp)) {
-                Text("Aplicar filtros", textAlign = TextAlign.Center)
+        Row( modifier = Modifier.fillMaxWidth()) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = Modifier.fillMaxWidth()){
+                Button(onClick = { TODO()}, colors = ButtonColors(
+                    containerColor = IberGreen,
+                    contentColor = Color.White,
+                    disabledContainerColor = Color.Gray,
+                    disabledContentColor = Color.White,
+                )) {
+                    Text("Aplicar filtros", textAlign = TextAlign.Center)
+                }
+                TextButton(
+                    onClick = { /*TODO*/ },
+                    colors = ButtonColors(
+                        contentColor = Color.Gray,
+                        containerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        disabledContentColor = Color.LightGray
+                    )
+                ) {
+                    Text("Eliminar filtros", textAlign = TextAlign.Center)
+                }
             }
+
         }
 
     }
@@ -86,22 +108,22 @@ fun FilterDivider(){
 }
 
 @Composable
-fun DateRangeInvoiceFilter() {
+fun DateRangeInvoiceFilter(viewModel: InvoiceFilterViewModel) {
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 30.dp)) {
         Text("Con fecha de emisión:", fontWeight = FontWeight.Bold ,style = MaterialTheme.typography.titleSmall)
         Row {
-            DatePickerInvoice("Desde:", Modifier.weight(1f))
+            DatePickerInvoice("Desde:", viewModel, Modifier.weight(1f))
             Spacer(Modifier.weight(0.1f))
-            DatePickerInvoice("Hasta:", Modifier.weight(1f))
+            DatePickerInvoice("Hasta:", viewModel,Modifier.weight(1f))
         }
 
     }
 }
 
 @Composable
-fun DatePickerInvoice(text : String, modifier: Modifier = Modifier) {
+fun DatePickerInvoice(text : String, viewModel: InvoiceFilterViewModel, modifier: Modifier = Modifier) {
     var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showModal by remember { mutableStateOf(false) }
 
@@ -109,7 +131,14 @@ fun DatePickerInvoice(text : String, modifier: Modifier = Modifier) {
         Text(text, color = Color.LightGray)
         OutlinedTextField(
             value = selectedDate?.let { convertMillisToDate(it) } ?: "",
-            onValueChange = { },
+            onValueChange = {
+                // TODO compare text with string resource
+                if(text.lowercase() == "desde:") {
+                    viewModel.setStartDate(it)
+                } else {
+                    viewModel.setEndDate(it)
+                }
+            },
             label = { Text("dia/mes/año") },
             placeholder = { Text("DD/MM/YYYY") },
             modifier = Modifier
@@ -140,9 +169,9 @@ fun DatePickerInvoice(text : String, modifier: Modifier = Modifier) {
 @SuppressLint("DefaultLocale")
 @Composable
 fun RangeSliderAmount(
-    value: Float,
     //onValueChange: (Float) -> Unit,
     valueRange: ClosedFloatingPointRange<Float>,
+    viewModel: InvoiceFilterViewModel,
     steps: Int = 0
 ) {
     var sliderValue by remember { mutableStateOf(valueRange)}
@@ -158,7 +187,11 @@ fun RangeSliderAmount(
         }
         RangeSlider(
             value = sliderValue,
-            onValueChange = { range -> sliderValue = range },
+            onValueChange = { range ->
+                sliderValue = range
+                viewModel.setMinAmount(range.start)
+                viewModel.setMaxAmount(range.endInclusive)
+            },
             valueRange = valueRange,
             steps = steps,
             modifier = Modifier.fillMaxWidth(),
@@ -172,23 +205,27 @@ fun RangeSliderAmount(
 }
 
 @Composable
-fun StatusFilter(){
+fun StatusFilter(viewModel: InvoiceFilterViewModel){
     Column(Modifier.padding(top = 30.dp)) {
         Text("Por estado", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
-        StatusItem("Pagadas")
-        StatusItem("Anuladas")
-        StatusItem("Cuota Fija")
-        StatusItem("Pendientes de pago")
-        StatusItem("Plan de pago")
+        StatusItem("Pagadas", viewModel::setIsPaid)
+        StatusItem("Anuladas", viewModel::setIsCancelled)
+        StatusItem("Cuota Fija", viewModel::setIsFixedFee)
+        StatusItem("Pendientes de pago", viewModel::setIsPending)
+        StatusItem("Plan de pago", viewModel::setIsPaymentPlan)
     }
 }
 
 @Composable
-fun StatusItem(text : String){
+fun StatusItem(text: String, onChange: (Boolean) -> Unit){
     Row(modifier = Modifier.fillMaxWidth().padding(0.dp), verticalAlignment = Alignment.CenterVertically) {
-        Checkbox(false, {})
+        Checkbox(false, onChange)
         Text(text)
     }
+}
+
+private fun applyFilters(){
+
 }
 
 

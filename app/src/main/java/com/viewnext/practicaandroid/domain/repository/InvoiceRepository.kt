@@ -22,7 +22,7 @@ class NetworkInvoiceRepository(
 class InvoiceRepositoryWrapper(
     private val offlineInvoiceRepository: OfflineInvoiceRepository,
     private val networkInvoiceRepository: NetworkInvoiceRepository,
-    private val firstLoad : Boolean = true
+    private var firstLoad : Boolean = true
 ) : InvoiceRepository {
 
     override suspend fun getInvoices(): InvoicesResponse {
@@ -30,6 +30,7 @@ class InvoiceRepositoryWrapper(
             Log.d("", "firstLoad")
             val invoicesResponse = networkInvoiceRepository.getInvoices()
             offlineInvoiceRepository.insertInvoices(invoicesResponse.invoices)
+            firstLoad = false
             return invoicesResponse
         }else{
             Log.d("", "offline")

@@ -18,6 +18,6 @@ data class InvoiceEntity(
     @SerialName("descEstado")
     val status : String,
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     val id : Int = 0
 )
