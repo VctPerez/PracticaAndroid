@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.viewnext.practicaandroid.domain.data.InvoiceFilter
+import com.viewnext.practicaandroid.domain.parseDateToYYYYMMDD
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,10 +16,10 @@ class InvoiceFilterViewModel : ViewModel() {
     val uiState: StateFlow<InvoiceFilter> get() = _uiState.asStateFlow()
 
     fun setStartDate(date: String) {
-        _uiState.value = _uiState.value.copy(startDate = date)
+        _uiState.value = _uiState.value.copy(startDate = parseDateToYYYYMMDD(date))
     }
     fun setEndDate(date: String) {
-        _uiState.value = _uiState.value.copy(endDate = date)
+        _uiState.value = _uiState.value.copy(endDate = parseDateToYYYYMMDD(date))
     }
     fun setMinAmount(amount: Float) {
         _uiState.value = _uiState.value.copy(minAmount = amount)
