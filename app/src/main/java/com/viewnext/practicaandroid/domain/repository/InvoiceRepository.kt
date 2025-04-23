@@ -43,9 +43,10 @@ class OfflineInvoiceRepository(
     private val invoiceDao: InvoiceDao
 ) : InvoiceRepository {
     override suspend fun getInvoices(): InvoicesResponse {
+        val invoiceList = invoiceDao.getAllInvoices().first()
         return InvoicesResponse(
-            invoices = invoiceDao.getAllInvoices().first(),
-            total = 0,
+            invoices = invoiceList,
+            total = invoiceList.size,
         )
     }
 

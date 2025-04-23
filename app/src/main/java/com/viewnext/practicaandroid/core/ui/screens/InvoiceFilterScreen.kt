@@ -44,22 +44,36 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import com.viewnext.practicaandroid.R
 import com.viewnext.practicaandroid.core.ui.DatePickerModal
 import com.viewnext.practicaandroid.core.ui.theme.IberGreen
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceFilterViewModel
+import com.viewnext.practicaandroid.domain.data.InvoiceFilter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
-fun InvoiceFilterScreen(modifier: Modifier = Modifier) {
+fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modifier) {
     val scrollState = rememberScrollState()
-    val viewModel : InvoiceFilterViewModel = viewModel(factory = InvoiceFilterViewModel.Factory)
-    val state by viewModel.uiState.collectAsState()
 
-    Log.d("filtro: ", state.toString())
+    val invoicesBackStackEntry : NavBackStackEntry = remember {
+        navController?.getBackStackEntry("invoices")!!
+    }
+    val viewModel : InvoiceFilterViewModel = viewModel(
+        invoicesBackStackEntry,
+        factory = InvoiceFilterViewModel.Factory,
+        key = "InvoiceFilterViewModel",
+    )
+
+    val filter = viewModel.uiState.collectAsState().value
+    Log.d("Filter","InvoiceFilterViewModel: ${viewModel.uiState.collectAsState().value}")
+
+
 
     Column(modifier = modifier
         .fillMaxSize()
@@ -69,13 +83,15 @@ fun InvoiceFilterScreen(modifier: Modifier = Modifier) {
         Text(stringResource(R.string.invoice_filter), style = MaterialTheme.typography.titleLarge)
         DateRangeInvoiceFilter(viewModel)
         FilterDivider()
-        RangeSliderAmount(0f..300f, viewModel)
+        RangeSliderAmount(0f..300f, filter, viewModel)
         FilterDivider()
-        StatusFilter(viewModel)
+        StatusFilter(filter, viewModel)
         Spacer(Modifier.size(50.dp))
         Row( modifier = Modifier.fillMaxWidth()) {
             Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = Modifier.fillMaxWidth()){
-                Button(onClick = { TODO()}, colors = ButtonColors(
+                Button(onClick = {
+                    navController?.popBackStack("invoices", inclusive = false)
+                }, colors = ButtonColors(
                     containerColor = IberGreen,
                     contentColor = Color.White,
                     disabledContainerColor = Color.Gray,
@@ -171,6 +187,7 @@ fun DatePickerInvoice(text : String, viewModel: InvoiceFilterViewModel, modifier
 fun RangeSliderAmount(
     //onValueChange: (Float) -> Unit,
     valueRange: ClosedFloatingPointRange<Float>,
+    filter : InvoiceFilter,
     viewModel: InvoiceFilterViewModel,
     steps: Int = 0
 ) {
@@ -186,7 +203,7 @@ fun RangeSliderAmount(
             Text( String.format("%.0f €", valueRange.endInclusive), modifier = Modifier.weight(1f), textAlign = TextAlign.End)
         }
         RangeSlider(
-            value = sliderValue,
+            value = filter.minAmount..filter.maxAmount,
             onValueChange = { range ->
                 sliderValue = range
                 viewModel.setMinAmount(range.start)
@@ -205,27 +222,23 @@ fun RangeSliderAmount(
 }
 
 @Composable
-fun StatusFilter(viewModel: InvoiceFilterViewModel){
+fun StatusFilter(filter: InvoiceFilter, viewModel: InvoiceFilterViewModel){
     Column(Modifier.padding(top = 30.dp)) {
         Text("Por estado", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
-        StatusItem("Pagadas", viewModel::setIsPaid)
-        StatusItem("Anuladas", viewModel::setIsCancelled)
-        StatusItem("Cuota Fija", viewModel::setIsFixedFee)
-        StatusItem("Pendientes de pago", viewModel::setIsPending)
-        StatusItem("Plan de pago", viewModel::setIsPaymentPlan)
+        StatusItem("Pagadas", filter.isPaid, viewModel::setIsPaid)
+        StatusItem("Anuladas", filter.isCancelled, viewModel::setIsCancelled)
+        StatusItem("Cuota Fija", filter.isFixedFee, viewModel::setIsFixedFee)
+        StatusItem("Pendientes de pago", filter.isPending, viewModel::setIsPending)
+        StatusItem("Plan de pago", filter.isPaymentPlan, viewModel::setIsPaymentPlan)
     }
 }
 
 @Composable
-fun StatusItem(text: String, onChange: (Boolean) -> Unit){
+fun StatusItem(text: String, value : Boolean, onChange : (Boolean) -> Unit = {}) {
     Row(modifier = Modifier.fillMaxWidth().padding(0.dp), verticalAlignment = Alignment.CenterVertically) {
-        Checkbox(false, onChange)
+        Checkbox(value, onCheckedChange = onChange)
         Text(text)
     }
-}
-
-private fun applyFilters(){
-
 }
 
 
@@ -242,6 +255,6 @@ private fun convertMillisToDate(millis: Long): String {
 @Preview(showBackground = true)
 fun InvoiceFilterScreenPreview() {
     PracticaAndroidTheme {
-        InvoiceFilterScreen()
+        InvoiceFilterScreen(null)
     }
 }
