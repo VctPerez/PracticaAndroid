@@ -1,5 +1,6 @@
 package com.viewnext.practicaandroid.core.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,6 +38,7 @@ import com.viewnext.practicaandroid.core.ui.theme.IberGreen
 import com.viewnext.practicaandroid.core.ui.theme.IberOrange
 import com.viewnext.practicaandroid.core.ui.theme.LightIberGreen
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
+import com.viewnext.practicaandroid.dataretrofit.DefaultAppContainer
 
 @Composable
 fun MainScreen(
@@ -73,9 +76,14 @@ fun MainScreen(
 }
 
 @Composable
-fun RetromockActionButton() =
+fun RetromockActionButton() {
+    val context = LocalContext.current
     ExtendedFloatingActionButton(
-        onClick = { /*TODO*/ },
+        onClick = {
+            DefaultAppContainer.toggleMocking()
+            Toast.makeText(context, "Retromock ${if (DefaultAppContainer.isMocking()) "enabled" else "disabled"}"
+                , Toast.LENGTH_SHORT).show()
+        },
         shape = CircleShape,
         containerColor = IberGreen,
         icon = {
@@ -94,7 +102,7 @@ fun RetromockActionButton() =
             )
         },
     )
-
+}
 
 @Composable
 fun MainScreenButton(

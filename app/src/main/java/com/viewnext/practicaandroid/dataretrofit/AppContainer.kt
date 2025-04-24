@@ -1,6 +1,7 @@
 package com.viewnext.practicaandroid.dataretrofit
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 import co.infinum.retromock.Retromock
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -25,6 +26,20 @@ interface AppContainer {
 class DefaultAppContainer(private val context : Context) : AppContainer{
     private val invoicesBaseUrl = "https://b1676490-a05a-4532-8f47-b3c9c36f7854.mock.pstmn.io"
 
+    companion object{
+        private var useRetromock = false
+        private var _invoiceRepository: InvoiceRepository? = null
+
+        fun toggleMocking() {
+            useRetromock = !useRetromock
+            _invoiceRepository = null
+
+        }
+        fun isMocking() : Boolean {
+            return useRetromock
+        }
+    }
+
     private val retrofit : Retrofit = Retrofit.Builder()
         .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
         .baseUrl(invoicesBaseUrl)
@@ -33,17 +48,22 @@ class DefaultAppContainer(private val context : Context) : AppContainer{
     private val retromock = Retromock.Builder().retrofit(retrofit)
         .defaultBodyFactory(context.assets::open).build()
 
-    private val invoiceApiService: InvoiceApiService by lazy {
-        retrofit.create(InvoiceApiService::class.java)
-//        retromock.create(InvoiceApiService::class.java)
-    }
+    private val invoiceApiService: InvoiceApiService
+        get() = if (useRetromock) {
+            retromock.create(InvoiceApiService::class.java)
+        } else {
+            retrofit.create(InvoiceApiService::class.java)
+        }
 
-    override val invoiceRepository: InvoiceRepository by lazy {
-        InvoiceRepositoryWrapper(
+
+
+    override val invoiceRepository: InvoiceRepository
+        get() = _invoiceRepository ?: InvoiceRepositoryWrapper(
             OfflineInvoiceRepository(InvoiceDatabase.getDatabase(context).invoiceDao()),
             NetworkInvoiceRepository(invoiceApiService)
-        )
-    }
+        ).also {
+            _invoiceRepository = it
+        }
 
     private val userApiService: UserApiService by lazy {
         retromock.create(UserApiService::class.java)
