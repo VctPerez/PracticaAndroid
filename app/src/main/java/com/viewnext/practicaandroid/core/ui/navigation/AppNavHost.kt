@@ -36,7 +36,7 @@ fun AppNavHost(
             SmartSolarScreen(modifier = modifier)
         }
         composable("invoices_filter") {
-            InvoiceFilterScreen(modifier = modifier)
+            InvoiceFilterScreen(navController, modifier = modifier)
         }
     }
 }

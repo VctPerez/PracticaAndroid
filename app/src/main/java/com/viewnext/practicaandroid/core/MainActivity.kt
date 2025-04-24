@@ -77,7 +77,7 @@ fun TestFilterScreen(name: String, modifier: Modifier = Modifier) {
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {CustomTopBar("Practica", false)})
     {innerPadding ->
-        InvoiceFilterScreen(Modifier.padding(innerPadding))
+        InvoiceFilterScreen(null, Modifier.padding(innerPadding))
     }
 }
 

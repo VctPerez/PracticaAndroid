@@ -1,5 +1,6 @@
 package com.viewnext.practicaandroid.domain.data
 
+import com.viewnext.practicaandroid.core.db.entity.InvoiceEntity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

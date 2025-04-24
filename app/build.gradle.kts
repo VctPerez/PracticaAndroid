@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10"
+    id("com.google.devtools.ksp") version "2.1.0-1.0.29"
 }
 
 android {
@@ -58,6 +59,11 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.retromock)
     implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+
     runtimeOnly(libs.androidx.material.icons.extended)
 
     testImplementation(libs.junit)

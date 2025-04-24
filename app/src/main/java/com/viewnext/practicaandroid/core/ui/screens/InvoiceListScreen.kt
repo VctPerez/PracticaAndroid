@@ -2,7 +2,7 @@ package com.viewnext.practicaandroid.core.ui.screens
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.Resources
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,17 +10,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,22 +33,59 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.viewnext.practicaandroid.R
-import com.viewnext.practicaandroid.core.ui.CustomTopBar
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceListViewModel
-import com.viewnext.practicaandroid.domain.data.InvoiceEntity
+import com.viewnext.practicaandroid.core.db.entity.InvoiceEntity
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.viewnext.practicaandroid.core.ui.theme.IberGreen
+import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceFilterViewModel
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun InvoiceListScreen(modifier: Modifier = Modifier) {
-    val viewModel : InvoiceListViewModel = viewModel(factory = InvoiceListViewModel.Factory)
-    val state by viewModel.uiState.collectAsState()
+
+    val invoiceFilterViewModel : InvoiceFilterViewModel = viewModel(
+        factory = InvoiceFilterViewModel.Factory,
+        key = "InvoiceFilterViewModel"
+    )
+    val filter = invoiceFilterViewModel.uiState.collectAsState().value
+
+    val invoiceListViewModel : InvoiceListViewModel = viewModel(
+        factory = InvoiceListViewModel.Factory
+    )
+    val state by invoiceListViewModel.uiState.collectAsState()
+
+    LaunchedEffect(filter) {
+        invoiceListViewModel.refreshInvoices(filter)
+    }
+
+//    Log.d("filtro:", invoiceFilterViewModel.uiState.collectAsState().value.filter.toString())
 
     Column(modifier = modifier.fillMaxSize().padding(start = 22.dp)){
         Text(stringResource(R.string.invoicelist_title), style = MaterialTheme.typography.titleLarge)
         //TODO: Add loading and error screen
-        InvoiceList(state.invoices)
+        if(state.isLoading){
+            LoadingInvoicesScreen()
+        } else if(state.error != null){
+            Text("error")
+        } else {
+            InvoiceList(state.invoices)
+        }
+    }
+}
+
+@Composable
+fun LoadingInvoicesScreen(modifier: Modifier = Modifier){
+    Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center)
+    {
+        CircularProgressIndicator(
+            modifier = Modifier.width(64.dp),
+            color = IberGreen,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+        )
+
     }
 }
 
@@ -100,11 +139,13 @@ fun InvoiceListScreenPreview(){
 @Composable
 fun NotPaidInvoicePreview(){
     PracticaAndroidTheme(dynamicColor = false) {
-        InvoiceItem(InvoiceEntity(
+        InvoiceItem(
+            InvoiceEntity(
             date = "2023/10/01",
             amount = 100.0,
             status = "Pagadan't",
-        ))
+        )
+        )
     }
 }
 
@@ -112,11 +153,13 @@ fun NotPaidInvoicePreview(){
 @Composable
 fun PaidInvoicePreview(){
     PracticaAndroidTheme(dynamicColor = false) {
-        InvoiceItem(InvoiceEntity(
+        InvoiceItem(
+            InvoiceEntity(
             date = "2023/10/01",
             amount = 100.0,
             status = "Pagada",
-        ))
+        )
+        )
     }
 }
 
