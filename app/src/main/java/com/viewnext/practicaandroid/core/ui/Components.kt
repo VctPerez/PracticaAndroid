@@ -151,6 +151,7 @@ fun IberDialogPopup(title : String, message : String, buttonText : String,
             {
                 Text(text=title,
                     style = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center,
                     fontSize = 30.sp,
                     modifier = Modifier.padding(16.dp)
                 )

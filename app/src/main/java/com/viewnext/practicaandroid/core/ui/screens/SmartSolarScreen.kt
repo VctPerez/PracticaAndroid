@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
@@ -22,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.viewnext.practicaandroid.R
+import com.viewnext.practicaandroid.core.ui.IberDialogPopup
 import com.viewnext.practicaandroid.core.ui.theme.InfoBlue
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 import com.viewnext.practicaandroid.core.ui.viewmodel.UserViewModel
@@ -148,6 +151,17 @@ fun DetailsTextField(
     modifier: Modifier = Modifier,
     info : Boolean = false
 ) {
+    var showRequestStatus by remember { mutableStateOf(false) }
+    if(showRequestStatus){
+        IberDialogPopup(
+            "Estado solicitud autoconsumo",
+            "El tiempo estimado de activación de tu autoconsumo es de 1 a 2 meses, este " +
+                    "variará en función de tu comunidad autónoma y distribuidora.",
+            "Aceptar", onDismiss = {
+                showRequestStatus = false
+            })
+    }
+
     TextField(
         value = value,
         enabled = false,
@@ -169,12 +183,22 @@ fun DetailsTextField(
         ),
         trailingIcon = {
             if (info) {
-                Icon(
-                    imageVector = Icons.Outlined.Info,
-                    contentDescription = "Info",
-                    modifier = Modifier.size(33.dp),
-                    tint = InfoBlue
-                )
+                IconButton(
+                    onClick = {showRequestStatus = true}
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Info,
+                        contentDescription = "Info",
+                        modifier = Modifier.size(33.dp),
+                        tint = InfoBlue
+                    )
+                }
+//                Icon(
+//                    imageVector = Icons.Outlined.Info,
+//                    contentDescription = "Info",
+//                    modifier = Modifier.size(33.dp),
+//                    tint = InfoBlue
+//                )
             }
         }
     )
