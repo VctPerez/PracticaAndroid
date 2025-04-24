@@ -81,7 +81,7 @@ fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modi
         .verticalScroll(scrollState))
     {
         Text(stringResource(R.string.invoice_filter), style = MaterialTheme.typography.titleLarge)
-        DateRangeInvoiceFilter(viewModel)
+        DateRangeInvoiceFilter(filter, viewModel)
         FilterDivider()
         RangeSliderAmount(0f..300f, filter, viewModel)
         FilterDivider()
@@ -124,36 +124,32 @@ fun FilterDivider(){
 }
 
 @Composable
-fun DateRangeInvoiceFilter(viewModel: InvoiceFilterViewModel) {
+fun DateRangeInvoiceFilter(filter : InvoiceFilter, viewModel: InvoiceFilterViewModel) {
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 30.dp)) {
         Text("Con fecha de emisión:", fontWeight = FontWeight.Bold ,style = MaterialTheme.typography.titleSmall)
         Row {
-            DatePickerInvoice("Desde:", viewModel, Modifier.weight(1f))
+            DatePickerInvoice("Desde:", filter.startDate, viewModel, Modifier.weight(1f))
             Spacer(Modifier.weight(0.1f))
-            DatePickerInvoice("Hasta:", viewModel,Modifier.weight(1f))
+            DatePickerInvoice("Hasta:", filter.endDate, viewModel, Modifier.weight(1f))
         }
 
     }
 }
 
 @Composable
-fun DatePickerInvoice(text : String, viewModel: InvoiceFilterViewModel, modifier: Modifier = Modifier) {
-    var selectedDate by remember { mutableStateOf<Long?>(null) }
+fun DatePickerInvoice(text : String, value : String, viewModel: InvoiceFilterViewModel, modifier: Modifier = Modifier) {
+    var selectedDate by remember { mutableStateOf<String?>(value) }
     var showModal by remember { mutableStateOf(false) }
 
     Column(modifier = modifier) {
         Text(text, color = Color.LightGray)
         OutlinedTextField(
-            value = selectedDate?.let { convertMillisToDate(it) } ?: "",
+            value = selectedDate!!,
             onValueChange = {
                 // TODO compare text with string resource
-                if(text.lowercase() == "desde:") {
-                    viewModel.setStartDate(it)
-                } else {
-                    viewModel.setEndDate(it)
-                }
+
             },
             label = { Text("dia/mes/año") },
             placeholder = { Text("DD/MM/YYYY") },
@@ -175,7 +171,17 @@ fun DatePickerInvoice(text : String, viewModel: InvoiceFilterViewModel, modifier
 
         if (showModal) {
             DatePickerModal(
-                onDateSelected = { selectedDate = it },
+                onDateSelected = { date ->
+                    selectedDate = date?.let { convertMillisToDate(it) } ?: ""
+                    if(text.lowercase() == "desde:") {
+//                        Log.d("DatePickerInvoice", "Desde: $it")
+                        viewModel.setStartDate(selectedDate!!)
+                    } else {
+//                        Log.d("DatePickerInvoice", "Hasta: $selectedDate")
+                        viewModel.setEndDate(selectedDate!!)
+
+                    }
+                },
                 onDismiss = { showModal = false }
             )
         }
