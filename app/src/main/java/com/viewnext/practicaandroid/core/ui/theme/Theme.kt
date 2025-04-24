@@ -33,8 +33,8 @@ private val LightColorScheme = lightColorScheme(
     background = Color.White,
     onBackground = Color.Black,
     error = Color.Red
+
     /*Other default colors to override
-    background = Color(0xFFFFFBFE),
     onPrimary = Color.White,
     onSecondary = IberGreen,
     onTertiary = Color.White,

@@ -25,6 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,6 +41,7 @@ import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceListViewModel
 import com.viewnext.practicaandroid.core.db.entity.InvoiceEntity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.viewnext.practicaandroid.core.ui.IberDialogPopup
 import com.viewnext.practicaandroid.core.ui.theme.IberGreen
 import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceFilterViewModel
 
@@ -68,7 +72,7 @@ fun InvoiceListScreen(modifier: Modifier = Modifier) {
         if(state.isLoading){
             LoadingInvoicesScreen()
         } else if(state.error != null){
-            Text("error")
+            Text("error + ${state.error}")
         } else {
             InvoiceList(state.invoices)
         }
@@ -100,7 +104,17 @@ fun InvoiceList(invoices : List<InvoiceEntity>, modifier: Modifier = Modifier){
 
 @Composable
 fun InvoiceItem(invoice : InvoiceEntity, modifier: Modifier = Modifier){
+    var showDialog by remember { mutableStateOf(false) }
+
     Column(modifier = Modifier.fillMaxWidth()){
+
+        if(showDialog){
+            IberDialogPopup("Información", "Esta funcionalidad no está disponible",
+                "Cerrar", onDismiss = {
+                    showDialog = false
+                })
+        }
+
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
             .padding(top = 5.dp, bottom = 5.dp))
         {
@@ -114,7 +128,7 @@ fun InvoiceItem(invoice : InvoiceEntity, modifier: Modifier = Modifier){
             }
             Spacer(Modifier.weight(1f))
             Text(invoice.parseAmount())
-            IconButton(onClick = { TODO()}) {
+            IconButton(onClick = { showDialog = true }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = "Arrow",
