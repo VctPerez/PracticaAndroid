@@ -22,3 +22,11 @@ fun InvoiceFilter.isEmpty(): Boolean {
             minAmount == DEFAULT_MIN_AMOUNT && maxAmount == DEFAULT_MAX_AMOUNT &&
             !isPaid && !isCancelled && !isFixedFee && !isPending && !isPaymentPlan
 }
+
+fun InvoiceFilter.isDefaultStartDate(): Boolean {
+    return startDate == DEFAULT_START_DATE
+}
+
+fun InvoiceFilter.isDefaultEndDate(): Boolean {
+    return endDate == DEFAULT_END_DATE
+}

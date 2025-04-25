@@ -2,7 +2,9 @@ package com.viewnext.practicaandroid.core.ui.screens
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,7 +46,11 @@ import androidx.navigation.NavController
 import com.viewnext.practicaandroid.core.ui.IberDialogPopup
 import com.viewnext.practicaandroid.core.ui.theme.IberGreen
 import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceFilterViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun InvoiceListScreen(modifier: Modifier = Modifier) {
@@ -93,6 +99,7 @@ fun LoadingInvoicesScreen(modifier: Modifier = Modifier){
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoiceList(invoices : List<InvoiceEntity>, modifier: Modifier = Modifier){
     LazyColumn(modifier = modifier.padding(top = 40.dp)){
@@ -102,6 +109,7 @@ fun InvoiceList(invoices : List<InvoiceEntity>, modifier: Modifier = Modifier){
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoiceItem(invoice : InvoiceEntity, modifier: Modifier = Modifier){
     var showDialog by remember { mutableStateOf(false) }
@@ -119,7 +127,7 @@ fun InvoiceItem(invoice : InvoiceEntity, modifier: Modifier = Modifier){
             .padding(top = 5.dp, bottom = 5.dp))
         {
             Column {
-                Text(invoice.parseDate(LocalContext.current))
+                Text(invoice.parseDate())
                 if(invoice.status.lowercase() != "pagada"){
                     Text(stringResource(R.string.invoice_not_paid),
                         color = MaterialTheme.colorScheme.error,
@@ -141,6 +149,7 @@ fun InvoiceItem(invoice : InvoiceEntity, modifier: Modifier = Modifier){
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun InvoiceListScreenPreview(){
@@ -149,13 +158,14 @@ fun InvoiceListScreenPreview(){
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun NotPaidInvoicePreview(){
     PracticaAndroidTheme(dynamicColor = false) {
         InvoiceItem(
             InvoiceEntity(
-            date = "2023/10/01",
+            date = "01/10/2023",
             amount = 100.0,
             status = "Pagadan't",
         )
@@ -163,13 +173,14 @@ fun NotPaidInvoicePreview(){
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun PaidInvoicePreview(){
     PracticaAndroidTheme(dynamicColor = false) {
         InvoiceItem(
             InvoiceEntity(
-            date = "2023/10/01",
+            date = "01/10/2023",
             amount = 100.0,
             status = "Pagada",
         )
@@ -177,26 +188,13 @@ fun PaidInvoicePreview(){
     }
 }
 
-private fun getMonth(month: String, context : Context): String {
-    return when (month) {
-        "01" -> context.getString(R.string.january_abr)
-        "02" -> context.getString(R.string.february_abr)
-        "03" -> context.getString(R.string.march_abr)
-        "04" -> context.getString(R.string.april_abr)
-        "05" -> context.getString(R.string.may_abr)
-        "06" -> context.getString(R.string.june_abr)
-        "07" -> context.getString(R.string.july_abr)
-        "08" -> context.getString(R.string.august_abr)
-        "09" -> context.getString(R.string.september_abr)
-        "10" -> context.getString(R.string.october_abr)
-        "11" -> context.getString(R.string.november_abr)
-        else -> context.getString(R.string.december_abr)
-    }
-}
+@RequiresApi(Build.VERSION_CODES.O)
+fun InvoiceEntity.parseDate(): String {
+    val inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())
+    val outputFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.getDefault())
 
-fun InvoiceEntity.parseDate(context : Context): String {
-    val dateParams = date.split("/")
-    return "${dateParams[0]} ${getMonth(dateParams[1], context)} ${dateParams[2]}"
+    val date = LocalDate.parse(date, inputFormatter)
+    return date.format(outputFormatter)
 }
 
 @SuppressLint("DefaultLocale")

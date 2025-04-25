@@ -56,7 +56,11 @@ class DefaultAppContainer(private val context : Context) : AppContainer{
         }
 
 
-
+    /**
+     *  * Lazy initialization of the invoice repository. If the repository is already created,
+     *  it will return the existing instance. Else, it will create a new instance of the repository
+     *  using using the selected ApiService (retrofit or retromock).
+     */
     override val invoiceRepository: InvoiceRepository
         get() = _invoiceRepository ?: InvoiceRepositoryWrapper(
             OfflineInvoiceRepository(InvoiceDatabase.getDatabase(context).invoiceDao()),

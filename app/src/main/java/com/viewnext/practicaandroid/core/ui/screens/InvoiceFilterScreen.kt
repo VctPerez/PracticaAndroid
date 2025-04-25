@@ -53,6 +53,9 @@ import com.viewnext.practicaandroid.core.ui.theme.IberGreen
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceFilterViewModel
 import com.viewnext.practicaandroid.domain.data.InvoiceFilter
+import com.viewnext.practicaandroid.domain.data.isDefaultEndDate
+import com.viewnext.practicaandroid.domain.data.isDefaultStartDate
+import com.viewnext.practicaandroid.domain.parseDateFromYYYYMMDD
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -90,14 +93,17 @@ fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modi
         Spacer(Modifier.size(50.dp))
         Row( modifier = Modifier.fillMaxWidth()) {
             Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = Modifier.fillMaxWidth()){
-                Button(onClick = {
-                    navController?.popBackStack("invoices", inclusive = false)
-                }, colors = ButtonColors(
-                    containerColor = IberGreen,
-                    contentColor = Color.White,
-                    disabledContainerColor = Color.Gray,
-                    disabledContentColor = Color.White,
-                )) {
+                Button(
+                    onClick = {
+                        navController?.popBackStack("invoices", inclusive = false)
+                    },
+                    colors = ButtonColors(
+                        containerColor = IberGreen,
+                        contentColor = Color.White,
+                        disabledContainerColor = Color.Gray,
+                        disabledContentColor = Color.White,
+                    )
+                ) {
                     Text("Aplicar filtros", textAlign = TextAlign.Center)
                 }
                 TextButton(
@@ -126,14 +132,18 @@ fun FilterDivider(){
 
 @Composable
 fun DateRangeInvoiceFilter(filter : InvoiceFilter, viewModel: InvoiceFilterViewModel) {
+
+    val startDate = if(filter.isDefaultStartDate()) "" else parseDateFromYYYYMMDD(filter.startDate)
+    val endDate = if(filter.isDefaultEndDate()) "" else parseDateFromYYYYMMDD(filter.endDate)
+
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 30.dp)) {
         Text("Con fecha de emisión:", fontWeight = FontWeight.Bold ,style = MaterialTheme.typography.titleSmall)
         Row {
-            DatePickerInvoice("Desde:", filter.startDate, viewModel, Modifier.weight(1f))
+            DatePickerInvoice("Desde:", startDate, viewModel, Modifier.weight(1f))
             Spacer(Modifier.weight(0.1f))
-            DatePickerInvoice("Hasta:", filter.endDate, viewModel, Modifier.weight(1f))
+            DatePickerInvoice("Hasta:", endDate, viewModel, Modifier.weight(1f))
         }
 
     }
@@ -148,10 +158,7 @@ fun DatePickerInvoice(text : String, value : String, viewModel: InvoiceFilterVie
         Text(text, color = Color.LightGray)
         OutlinedTextField(
             value = selectedDate!!,
-            onValueChange = {
-                // TODO compare text with string resource
-
-            },
+            onValueChange = {},
             label = { Text("dia/mes/año") },
             placeholder = { Text("DD/MM/YYYY") },
             modifier = Modifier
@@ -173,7 +180,7 @@ fun DatePickerInvoice(text : String, value : String, viewModel: InvoiceFilterVie
         if (showModal) {
             DatePickerModal(
                 onDateSelected = { date ->
-                    selectedDate = date?.let { convertMillisToDate(it) } ?: ""
+                    selectedDate = date?.let { convertMillisToDate(it)} ?: ""
                     if(text.lowercase() == "desde:") {
 //                        Log.d("DatePickerInvoice", "Desde: $it")
                         viewModel.setStartDate(selectedDate!!)

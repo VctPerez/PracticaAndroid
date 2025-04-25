@@ -19,6 +19,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerColors
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -140,7 +143,7 @@ fun DatePickerModal(
             TextButton(onClick = onDismiss) {
                 Text("Cancel")
             }
-        }
+        },
     ) {
         DatePicker(state = datePickerState)
     }
@@ -161,14 +164,14 @@ fun IberDialogPopup(title : String, message : String, buttonText : String,
                 disabledContentColor = MaterialTheme.colorScheme.onBackground,
             )
         ) {
-            Column(modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+            Column(modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween)
             {
                 Text(text=title,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
-                    fontSize = 30.sp,
+//                    fontSize = 30.sp,
                     modifier = Modifier.padding(16.dp)
                 )
                 Text(
@@ -194,5 +197,13 @@ fun IberDialogPopup(title : String, message : String, buttonText : String,
 fun IberDialogPopupPreview(){
     PracticaAndroidTheme(dynamicColor = false) {
         IberDialogPopup("Title", "Message", "OK")
+    }
+}
+
+@Composable
+@Preview(showSystemUi = true)
+fun DatePickerModalPreview(){
+    PracticaAndroidTheme(dynamicColor = false) {
+        DatePickerModal(onDateSelected = {}, onDismiss = {})
     }
 }
