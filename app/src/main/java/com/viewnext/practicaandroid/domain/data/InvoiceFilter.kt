@@ -6,15 +6,15 @@ const val DEFAULT_MIN_AMOUNT = 0f
 const val DEFAULT_MAX_AMOUNT = 300f
 
 data class InvoiceFilter(
-    val startDate: String = DEFAULT_START_DATE,
-    val endDate: String = DEFAULT_END_DATE,
-    val minAmount: Float = DEFAULT_MIN_AMOUNT,
-    val maxAmount: Float = DEFAULT_MAX_AMOUNT,
-    val isPaid: Boolean = false,
-    val isCancelled: Boolean = false,
-    val isFixedFee: Boolean = false,
-    val isPending: Boolean = false,
-    val isPaymentPlan: Boolean = false
+    var startDate: String = DEFAULT_START_DATE,
+    var endDate: String = DEFAULT_END_DATE,
+    var minAmount: Float = DEFAULT_MIN_AMOUNT,
+    var maxAmount: Float = DEFAULT_MAX_AMOUNT,
+    var isPaid: Boolean = false,
+    var isCancelled: Boolean = false,
+    var isFixedFee: Boolean = false,
+    var isPending: Boolean = false,
+    var isPaymentPlan: Boolean = false
 )
 
 fun InvoiceFilter.isEmpty(): Boolean {

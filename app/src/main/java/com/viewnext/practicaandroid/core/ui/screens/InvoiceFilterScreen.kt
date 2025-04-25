@@ -28,6 +28,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,7 +49,6 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.viewnext.practicaandroid.R
 import com.viewnext.practicaandroid.core.ui.DatePickerModal
-import com.viewnext.practicaandroid.core.ui.IberDialogPopup
 import com.viewnext.practicaandroid.core.ui.theme.IberGreen
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceFilterViewModel
@@ -65,36 +65,42 @@ import java.util.Locale
 fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modifier) {
     val scrollState = rememberScrollState()
 
-    val invoicesBackStackEntry : NavBackStackEntry = remember {
+    val invoicesBackStackEntry: NavBackStackEntry = remember {
         navController?.getBackStackEntry("invoices")!!
     }
-    val viewModel : InvoiceFilterViewModel = viewModel(
+    val viewModel: InvoiceFilterViewModel = viewModel(
         invoicesBackStackEntry,
         factory = InvoiceFilterViewModel.Factory,
         key = "InvoiceFilterViewModel",
     )
 
-    val filter = viewModel.uiState.collectAsState().value
-    Log.d("Filter","InvoiceFilterViewModel: ${viewModel.uiState.collectAsState().value}")
+    val filterState = viewModel.uiState.collectAsState()
+    Log.d("Filter", "InvoiceFilterViewModel: ${viewModel.uiState.collectAsState().value}")
 
+    val newFilter = remember { mutableStateOf(filterState.value) }
 
-
-    Column(modifier = modifier
-        .fillMaxSize()
-        .padding(start = 22.dp, end = 22.dp)
-        .verticalScroll(scrollState))
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(start = 22.dp, end = 22.dp)
+            .verticalScroll(scrollState)
+    )
     {
         Text(stringResource(R.string.invoice_filter), style = MaterialTheme.typography.titleLarge)
-        DateRangeInvoiceFilter(filter, viewModel)
+        DateRangeInvoiceFilter(newFilter, viewModel)
         FilterDivider()
-        RangeSliderAmount(0f..300f, filter, viewModel)
+        RangeSliderAmount(0f..300f, newFilter, viewModel)
         FilterDivider()
-        StatusFilter(filter, viewModel)
+        StatusFilter(newFilter, viewModel)
         Spacer(Modifier.size(50.dp))
-        Row( modifier = Modifier.fillMaxWidth()) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = Modifier.fillMaxWidth()){
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Button(
                     onClick = {
+                        viewModel.setFilter(newFilter.value)
                         navController?.popBackStack("invoices", inclusive = false)
                     },
                     colors = ButtonColors(
@@ -107,7 +113,7 @@ fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modi
                     Text("Aplicar filtros", textAlign = TextAlign.Center)
                 }
                 TextButton(
-                    onClick = {viewModel.clearFilters()},
+                    onClick = { viewModel.clearFilters() },
                     colors = ButtonColors(
                         contentColor = Color.Gray,
                         containerColor = Color.Transparent,
@@ -125,32 +131,45 @@ fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modi
 }
 
 @Composable
-fun FilterDivider(){
+fun FilterDivider() {
     Spacer(Modifier.size(40.dp))
     HorizontalDivider(color = Color.LightGray, thickness = 1.dp)
 }
 
 @Composable
-fun DateRangeInvoiceFilter(filter : InvoiceFilter, viewModel: InvoiceFilterViewModel) {
+fun DateRangeInvoiceFilter(filter: MutableState<InvoiceFilter>, viewModel: InvoiceFilterViewModel) {
 
-    val startDate = if(filter.isDefaultStartDate()) "" else parseDateFromYYYYMMDD(filter.startDate)
-    val endDate = if(filter.isDefaultEndDate()) "" else parseDateFromYYYYMMDD(filter.endDate)
+    val startDate =
+        if (filter.value.isDefaultStartDate()) "" else parseDateFromYYYYMMDD(filter.value.startDate)
+    val endDate =
+        if (filter.value.isDefaultEndDate()) "" else parseDateFromYYYYMMDD(filter.value.endDate)
 
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 30.dp)) {
-        Text("Con fecha de emisión:", fontWeight = FontWeight.Bold ,style = MaterialTheme.typography.titleSmall)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 30.dp)
+    ) {
+        Text(
+            "Con fecha de emisión:",
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleSmall
+        )
         Row {
-            DatePickerInvoice("Desde:", startDate, viewModel, Modifier.weight(1f))
+            DatePickerInvoice("Desde:", startDate, filter, Modifier.weight(1f))
             Spacer(Modifier.weight(0.1f))
-            DatePickerInvoice("Hasta:", endDate, viewModel, Modifier.weight(1f))
+            DatePickerInvoice("Hasta:", endDate, filter, Modifier.weight(1f))
         }
 
     }
 }
 
 @Composable
-fun DatePickerInvoice(text : String, value : String, viewModel: InvoiceFilterViewModel, modifier: Modifier = Modifier) {
+fun DatePickerInvoice(
+    text: String,
+    value: String,
+    filter: MutableState<InvoiceFilter>,
+    modifier: Modifier = Modifier
+) {
     var selectedDate by remember { mutableStateOf<String?>(value) }
     var showModal by remember { mutableStateOf(false) }
 
@@ -180,14 +199,15 @@ fun DatePickerInvoice(text : String, value : String, viewModel: InvoiceFilterVie
         if (showModal) {
             DatePickerModal(
                 onDateSelected = { date ->
-                    selectedDate = date?.let { convertMillisToDate(it)} ?: ""
-                    if(text.lowercase() == "desde:") {
+                    selectedDate = date?.let { convertMillisToDate(it) } ?: ""
+                    if (text.lowercase() == "desde:") {
 //                        Log.d("DatePickerInvoice", "Desde: $it")
-                        viewModel.setStartDate(selectedDate!!)
+//                        viewModel.setStartDate(selectedDate!!)
+                        filter.value = filter.value.copy(startDate = selectedDate!!)
                     } else {
 //                        Log.d("DatePickerInvoice", "Hasta: $selectedDate")
-                        viewModel.setEndDate(selectedDate!!)
-
+//                        viewModel.setEndDate(selectedDate!!)
+                        filter.value = filter.value.copy(endDate = selectedDate!!)
                     }
                 },
                 onDismiss = { showModal = false }
@@ -201,27 +221,46 @@ fun DatePickerInvoice(text : String, value : String, viewModel: InvoiceFilterVie
 fun RangeSliderAmount(
     //onValueChange: (Float) -> Unit,
     valueRange: ClosedFloatingPointRange<Float>,
-    filter : InvoiceFilter,
+    filter: MutableState<InvoiceFilter>,
     viewModel: InvoiceFilterViewModel,
     steps: Int = 0
 ) {
-    var sliderValue by remember { mutableStateOf(valueRange)}
+    var sliderValue by remember { mutableStateOf(valueRange) }
 
-    Column(Modifier.padding(top = 30.dp)){
-        Text("Por un importe", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
+    Column(Modifier.padding(top = 30.dp)) {
+        Text(
+            "Por un importe",
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleSmall
+        )
 
-        Text(sliderValue.toFormatString(), color = IberGreen, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+        Text(
+            sliderValue.toFormatString(),
+            color = IberGreen,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            Text( String.format("%.0f €", valueRange.start), modifier = Modifier.weight(1f), textAlign = TextAlign.Start)
-            Text( String.format("%.0f €", valueRange.endInclusive), modifier = Modifier.weight(1f), textAlign = TextAlign.End)
+            Text(
+                String.format("%.0f €", valueRange.start),
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Start
+            )
+            Text(
+                String.format("%.0f €", valueRange.endInclusive),
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.End
+            )
         }
         RangeSlider(
-            value = filter.minAmount..filter.maxAmount,
+            value = filter.value.minAmount..filter.value.maxAmount,
             onValueChange = { range ->
                 sliderValue = range
-                viewModel.setMinAmount(range.start)
-                viewModel.setMaxAmount(range.endInclusive)
+                filter.value =
+                    filter.value.copy(minAmount = range.start, maxAmount = range.endInclusive)
+//                viewModel.setMinAmount(range.start)
+//                viewModel.setMaxAmount(range.endInclusive)
             },
             valueRange = valueRange,
             steps = steps,
@@ -236,27 +275,52 @@ fun RangeSliderAmount(
 }
 
 @Composable
-fun StatusFilter(filter: InvoiceFilter, viewModel: InvoiceFilterViewModel){
+fun StatusFilter(filter: MutableState<InvoiceFilter>, viewModel: InvoiceFilterViewModel) {
     Column(Modifier.padding(top = 30.dp)) {
-        Text("Por estado", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
-        StatusItem("Pagadas", filter.isPaid, viewModel::setIsPaid)
-        StatusItem("Anuladas", filter.isCancelled, viewModel::setIsCancelled)
-        StatusItem("Cuota Fija", filter.isFixedFee, viewModel::setIsFixedFee)
-        StatusItem("Pendientes de pago", filter.isPending, viewModel::setIsPending)
-        StatusItem("Plan de pago", filter.isPaymentPlan, viewModel::setIsPaymentPlan)
+        Text(
+            "Por estado",
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleSmall
+        )
+        StatusItem(
+            "Pagadas",
+            filter.value.isPaid,
+            onChange = { filter.value = filter.value.copy(isPaid = it) }
+        )
+        StatusItem(
+            "Anuladas",
+            filter.value.isCancelled,
+            onChange = { filter.value = filter.value.copy(isCancelled = it) })
+        StatusItem(
+            "Cuota Fija",
+            filter.value.isFixedFee,
+            onChange = { filter.value = filter.value.copy(isFixedFee = it) })
+        StatusItem(
+            "Pendientes de pago",
+            filter.value.isPending,
+            onChange = { filter.value = filter.value.copy(isPending = it) })
+        StatusItem(
+            "Plan de pago",
+            filter.value.isPaymentPlan,
+            onChange = { filter.value = filter.value.copy(isPaymentPlan = it) })
     }
 }
 
 @Composable
-fun StatusItem(text: String, value : Boolean, onChange : (Boolean) -> Unit = {}) {
-    Row(modifier = Modifier.fillMaxWidth().padding(0.dp), verticalAlignment = Alignment.CenterVertically) {
+fun StatusItem(text: String, value: Boolean, onChange: (Boolean) -> Unit = {}) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(0.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Checkbox(value, onCheckedChange = onChange)
         Text(text)
     }
 }
 
 
-private fun ClosedFloatingPointRange<Float>.toFormatString() : String {
+private fun ClosedFloatingPointRange<Float>.toFormatString(): String {
     return String.format("%.0f € - %.0f €", start, endInclusive)
 }
 

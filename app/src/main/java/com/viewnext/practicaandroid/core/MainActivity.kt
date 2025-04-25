@@ -1,9 +1,11 @@
 package com.viewnext.practicaandroid.core
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -20,6 +22,7 @@ import com.viewnext.practicaandroid.core.ui.screens.InvoiceListScreen
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -31,6 +34,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ApplicationComposable(navController : NavHostController = rememberNavController()){
     val navBackStackEntry = navController.currentBackStackEntryAsState()
@@ -43,7 +47,6 @@ fun ApplicationComposable(navController : NavHostController = rememberNavControl
                     title = "Atrás",
                     onInvoiceList = currentDestination?.route == "invoices",
                     onFilter = currentDestination?.route == "invoices_filter",
-                    navController,
                     onBackButtonClick = {
                         navController.popBackStack()
                     },
@@ -63,6 +66,7 @@ fun ApplicationComposable(navController : NavHostController = rememberNavControl
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TestMainScreen(){
     Scaffold(modifier = Modifier.fillMaxSize(),
@@ -82,6 +86,7 @@ fun TestFilterScreen(name: String, modifier: Modifier = Modifier) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showSystemUi = true)
 @Composable
 fun ListPreview() {

@@ -7,9 +7,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -19,8 +17,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerColors
-import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -35,12 +31,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -55,7 +49,6 @@ fun CustomTopBar(
     title : String,
     onInvoiceList : Boolean = false,
     onFilter : Boolean = false,
-    navController: NavController? = null,
     onBackButtonClick : () -> Unit = {},
     navigateToFilter : () -> Unit = {}
 ) {
@@ -84,17 +77,8 @@ fun CustomTopBar(
                         contentDescription = "Filter",
                     )
                 }
-            }else if(onFilter && navController != null){
-                val invoicesBackStackEntry = remember{navController.getBackStackEntry("invoices")}
-                val filterViewModel : InvoiceFilterViewModel = viewModel(
-                    invoicesBackStackEntry,
-                    factory = InvoiceFilterViewModel.Factory,
-                    key = "InvoiceFilterViewModel",
-                )
-                IconButton(onClick = {
-                    filterViewModel.clearFilters()
-                    onBackButtonClick()
-                }) {
+            }else if(onFilter){
+                IconButton(onClick = onBackButtonClick){
                     Image(
                         painter = painterResource(R.drawable.close_icon),
                         contentDescription = "Back",

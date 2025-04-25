@@ -1,5 +1,7 @@
 package com.viewnext.practicaandroid.core.ui.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -10,6 +12,7 @@ import com.viewnext.practicaandroid.core.ui.screens.InvoiceListScreen
 import com.viewnext.practicaandroid.core.ui.screens.MainScreen
 import com.viewnext.practicaandroid.core.ui.screens.SmartSolarScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavHost(
     navController: NavHostController,
