@@ -101,7 +101,7 @@ fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modi
                     Text("Aplicar filtros", textAlign = TextAlign.Center)
                 }
                 TextButton(
-                    onClick = { /*TODO*/ },
+                    onClick = {viewModel.clearFilters()},
                     colors = ButtonColors(
                         contentColor = Color.Gray,
                         containerColor = Color.Transparent,

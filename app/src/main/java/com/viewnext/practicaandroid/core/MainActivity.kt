@@ -43,6 +43,7 @@ fun ApplicationComposable(navController : NavHostController = rememberNavControl
                     title = "Atrás",
                     onInvoiceList = currentDestination?.route == "invoices",
                     onFilter = currentDestination?.route == "invoices_filter",
+                    navController,
                     onBackButtonClick = {
                         navController.popBackStack()
                     },

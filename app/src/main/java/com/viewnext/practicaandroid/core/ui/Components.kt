@@ -2,6 +2,7 @@
 
 package com.viewnext.practicaandroid.core.ui
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -37,15 +39,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.viewnext.practicaandroid.R
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
+import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceFilterViewModel
 
+@SuppressLint("UnrememberedGetBackStackEntry")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomTopBar(
     title : String,
-    onInvoiceList : Boolean,
+    onInvoiceList : Boolean = false,
     onFilter : Boolean = false,
+    navController: NavController? = null,
     onBackButtonClick : () -> Unit = {},
     navigateToFilter : () -> Unit = {}
 ) {
@@ -74,8 +81,17 @@ fun CustomTopBar(
                         contentDescription = "Filter",
                     )
                 }
-            }else if(onFilter){
-                IconButton(onClick = onBackButtonClick) {
+            }else if(onFilter && navController != null){
+                val invoicesBackStackEntry = remember{navController.getBackStackEntry("invoices")}
+                val filterViewModel : InvoiceFilterViewModel = viewModel(
+                    invoicesBackStackEntry,
+                    factory = InvoiceFilterViewModel.Factory,
+                    key = "InvoiceFilterViewModel",
+                )
+                IconButton(onClick = {
+                    filterViewModel.clearFilters()
+                    onBackButtonClick()
+                }) {
                     Image(
                         painter = painterResource(R.drawable.close_icon),
                         contentDescription = "Back",
@@ -98,7 +114,7 @@ fun CustomTopBarPreview(){
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 fun CustomTopBarPreviewDark(){
     PracticaAndroidTheme(dynamicColor = false) {
-        CustomTopBar("Facturas", true)
+        CustomTopBar("Facturas",true)
     }
 }
 
