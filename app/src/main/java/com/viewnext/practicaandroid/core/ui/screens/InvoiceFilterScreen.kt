@@ -87,11 +87,15 @@ fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modi
     )
     {
         Text(stringResource(R.string.invoice_filter), style = MaterialTheme.typography.titleLarge)
-        DateRangeInvoiceFilter(newFilter, viewModel)
+
+        DateRangeInvoiceFilter(newFilter)
         FilterDivider()
-        RangeSliderAmount(0f..300f, newFilter, viewModel)
+
+        RangeSliderAmount(0f..300f, newFilter)
         FilterDivider()
-        StatusFilter(newFilter, viewModel)
+
+        StatusFilter(newFilter)
+
         Spacer(Modifier.size(50.dp))
         Row(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -137,7 +141,7 @@ fun FilterDivider() {
 }
 
 @Composable
-fun DateRangeInvoiceFilter(filter: MutableState<InvoiceFilter>, viewModel: InvoiceFilterViewModel) {
+fun DateRangeInvoiceFilter(filter: MutableState<InvoiceFilter>) {
 
     val startDate =
         if (filter.value.isDefaultStartDate()) "" else parseDateFromYYYYMMDD(filter.value.startDate)
@@ -222,7 +226,6 @@ fun RangeSliderAmount(
     //onValueChange: (Float) -> Unit,
     valueRange: ClosedFloatingPointRange<Float>,
     filter: MutableState<InvoiceFilter>,
-    viewModel: InvoiceFilterViewModel,
     steps: Int = 0
 ) {
     var sliderValue by remember { mutableStateOf(valueRange) }
@@ -275,7 +278,7 @@ fun RangeSliderAmount(
 }
 
 @Composable
-fun StatusFilter(filter: MutableState<InvoiceFilter>, viewModel: InvoiceFilterViewModel) {
+fun StatusFilter(filter: MutableState<InvoiceFilter>) {
     Column(Modifier.padding(top = 30.dp)) {
         Text(
             "Por estado",
@@ -320,6 +323,7 @@ fun StatusItem(text: String, value: Boolean, onChange: (Boolean) -> Unit = {}) {
 }
 
 
+@SuppressLint("DefaultLocale")
 private fun ClosedFloatingPointRange<Float>.toFormatString(): String {
     return String.format("%.0f € - %.0f €", start, endInclusive)
 }
