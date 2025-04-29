@@ -22,6 +22,7 @@ android {
 
     tasks.withType<Test> {
         useJUnitPlatform()
+        jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
     }
 
     buildTypes {
@@ -73,7 +74,9 @@ dependencies {
     testImplementation (libs.junit.jupiter)
     testImplementation (libs.junit.jupiter.api)
     testImplementation (libs.junit.jupiter.params)
-    testImplementation(libs.mockito.all)
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlinx.coroutines.test)
     testRuntimeOnly (libs.junit.jupiter.engine)
     testRuntimeOnly(libs.junit.platform.launcher)
 

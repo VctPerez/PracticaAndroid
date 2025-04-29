@@ -8,7 +8,7 @@ package com.viewnext.practicaandroid.domain
  */
 fun parseDateToYYYYMMDD(date: String): String {
     if(!isDDMMYYYY(date)) {
-        throw IllegalArgumentException("Invalid date format")
+        throw IllegalArgumentException("Invalid date format. Must be DD/MM/YYYY. Date Given: $date")
     }
 
     val dateParts = date.split("/")
@@ -22,7 +22,7 @@ fun parseDateToYYYYMMDD(date: String): String {
  */
 fun parseDateFromYYYYMMDD(date: String): String {
     if (!isYYYYMMDD(date)) {
-        throw IllegalArgumentException("Invalid date format")
+        throw IllegalArgumentException("Invalid date format. Must be YYYY-MM-DD. Date Given: $date")
     }
 
     val dateParts = date.split("-")
