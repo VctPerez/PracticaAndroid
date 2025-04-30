@@ -18,9 +18,15 @@ data class InvoiceFilter(
 )
 
 fun InvoiceFilter.isEmpty(): Boolean {
-    return startDate == DEFAULT_START_DATE && endDate == DEFAULT_END_DATE &&
-            minAmount == DEFAULT_MIN_AMOUNT && maxAmount == DEFAULT_MAX_AMOUNT &&
-            !isPaid && !isCancelled && !isFixedFee && !isPending && !isPaymentPlan
+    return startDate == DEFAULT_START_DATE &&
+            endDate == DEFAULT_END_DATE &&
+            minAmount == DEFAULT_MIN_AMOUNT &&
+            maxAmount == DEFAULT_MAX_AMOUNT &&
+            !isPaid &&
+            !isCancelled &&
+            !isFixedFee &&
+            !isPending &&
+            !isPaymentPlan
 }
 
 fun InvoiceFilter.isDefaultStartDate(): Boolean {
@@ -29,4 +35,8 @@ fun InvoiceFilter.isDefaultStartDate(): Boolean {
 
 fun InvoiceFilter.isDefaultEndDate(): Boolean {
     return endDate == DEFAULT_END_DATE
+}
+
+fun InvoiceFilter.test() : Boolean {
+    return minAmount == DEFAULT_MIN_AMOUNT && maxAmount == DEFAULT_MAX_AMOUNT
 }
