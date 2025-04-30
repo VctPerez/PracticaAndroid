@@ -31,12 +31,12 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
             _state.update { it.copy(loading = true) }
             try {
                 val userDetails = repository.getUserDetails()
-                Log.d("UserDetails", userDetails.toString())
-                _state.update { it.copy(userDetails = userDetails) }
+//                Log.d("UserDetails", userDetails.toString())
+                _state.update { it.copy(loading = false, userDetails = userDetails) }
             } catch (e: Exception) {
-                Log.e("ErrorType", e::class.simpleName ?: "Unknown")
-                Log.e("Error", e.message.toString())
-                _state.update { it.copy(error = e.message) }
+//                Log.e("ErrorType", e::class.simpleName ?: "Unknown")
+//                Log.e("Error", e.message.toString())
+                _state.update { it.copy(loading = false, error = e.message) }
             }
         }
     }
