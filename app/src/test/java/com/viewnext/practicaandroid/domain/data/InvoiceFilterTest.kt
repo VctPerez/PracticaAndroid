@@ -178,20 +178,13 @@ class InvoiceFilterTest {
     }
 
     @Nested
-    inner class TestMethod{
+    inner class MinDateGreaterThanEndDate{
         @Test
-        fun test_whenAllFieldsAreDefault_returnsTrue() {
-            val invoiceFilter = InvoiceFilter()
-
-            assertTrue(invoiceFilter.test())
-        }
-
-        @Test
-        fun test_whenMinAmountIsNotDefault_returnsFalse() {
+        fun minDateGreaterThanEndDate_whenStartDateIsGreaterThanEndDate_returnsTrue() {
             val invoiceFilter = InvoiceFilter(
-                startDate = "2023-10-01",
-                endDate = "2023-10-31",
-                maxAmount = DEFAULT_MAX_AMOUNT,
+                startDate = "2023-10-31",
+                endDate = "2023-10-01",
+                maxAmount = 100f,
                 minAmount = 50f,
                 isPaid = true,
                 isCancelled = true,
@@ -200,28 +193,11 @@ class InvoiceFilterTest {
                 isPaymentPlan = true
             )
 
-            assertFalse(invoiceFilter.test())
+            assertTrue(invoiceFilter.minDateGreaterThanEndDate())
         }
 
         @Test
-        fun test_whenMaxAmountIsNotDefault_returnsFalse() {
-            val invoiceFilter = InvoiceFilter(
-                startDate = "2023-10-01",
-                endDate = "2023-10-31",
-                maxAmount = 100f,
-                minAmount = DEFAULT_MIN_AMOUNT,
-                isPaid = true,
-                isCancelled = true,
-                isFixedFee = true,
-                isPending = true,
-                isPaymentPlan = true
-            )
-
-            assertFalse(invoiceFilter.test())
-        }
-
-        @Test
-        fun test_whenMinAmountAndMaxAmountAreNotDefault_returnsFalse() {
+        fun minDateGreaterThanEndDate_whenStartDateIsLessThanEndDate_returnsFalse() {
             val invoiceFilter = InvoiceFilter(
                 startDate = "2023-10-01",
                 endDate = "2023-10-31",
@@ -234,7 +210,24 @@ class InvoiceFilterTest {
                 isPaymentPlan = true
             )
 
-            assertFalse(invoiceFilter.test())
+            assertFalse(invoiceFilter.minDateGreaterThanEndDate())
+        }
+
+        @Test
+        fun minDateGreaterThanEndDate_whenStartDateIsEqualToEndDate_returnsFalse() {
+            val invoiceFilter = InvoiceFilter(
+                startDate = "2023-10-01",
+                endDate = "2023-10-01",
+                maxAmount = 100f,
+                minAmount = 50f,
+                isPaid = true,
+                isCancelled = true,
+                isFixedFee = true,
+                isPending = true,
+                isPaymentPlan = true
+            )
+
+            assertFalse(invoiceFilter.minDateGreaterThanEndDate())
         }
     }
 }
