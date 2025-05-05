@@ -16,13 +16,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -49,12 +54,14 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.viewnext.practicaandroid.R
 import com.viewnext.practicaandroid.core.ui.DatePickerModal
+import com.viewnext.practicaandroid.core.ui.IberDialogPopup
 import com.viewnext.practicaandroid.core.ui.theme.IberGreen
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceFilterViewModel
 import com.viewnext.practicaandroid.domain.data.InvoiceFilter
 import com.viewnext.practicaandroid.domain.data.isDefaultEndDate
 import com.viewnext.practicaandroid.domain.data.isDefaultStartDate
+import com.viewnext.practicaandroid.domain.data.minDateGreaterThanEndDate
 import com.viewnext.practicaandroid.domain.parseDateFromYYYYMMDD
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -79,6 +86,21 @@ fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modi
 
     val newFilter = remember { mutableStateOf(filterState.value) }
 
+    val dateError = remember { mutableStateOf(false) }
+    val showErrorDialog = remember { mutableStateOf(false) }
+
+    if(showErrorDialog.value){
+        IberDialogPopup(
+            "Fechas invalidas",
+            "La fecha de inicio no puede ser mayor que la fecha de fin",
+            error = true,
+            onDismiss = {
+                showErrorDialog.value = false
+//                dateError.value = false
+            },
+            buttonText = "Aceptar"
+        )
+    }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -87,11 +109,15 @@ fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modi
     )
     {
         Text(stringResource(R.string.invoice_filter), style = MaterialTheme.typography.titleLarge)
-        DateRangeInvoiceFilter(newFilter, viewModel)
+
+        DateRangeInvoiceFilter(newFilter, dateError)
         FilterDivider()
-        RangeSliderAmount(0f..300f, newFilter, viewModel)
+
+        RangeSliderAmount(0f..300f, newFilter)
         FilterDivider()
-        StatusFilter(newFilter, viewModel)
+
+        StatusFilter(newFilter)
+
         Spacer(Modifier.size(50.dp))
         Row(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -100,8 +126,13 @@ fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modi
             ) {
                 Button(
                     onClick = {
-                        viewModel.setFilter(newFilter.value)
-                        navController?.popBackStack("invoices", inclusive = false)
+                        if (newFilter.value.minDateGreaterThanEndDate()) {
+                            showErrorDialog.value = true
+                            dateError.value = true
+                        } else {
+                            viewModel.setFilter(newFilter.value)
+                            navController?.popBackStack("invoices", inclusive = false)
+                        }
                     },
                     colors = ButtonColors(
                         containerColor = IberGreen,
@@ -113,7 +144,7 @@ fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modi
                     Text("Aplicar filtros", textAlign = TextAlign.Center)
                 }
                 TextButton(
-                    onClick = { viewModel.clearFilters() },
+                    onClick = { newFilter.value = InvoiceFilter() },
                     colors = ButtonColors(
                         contentColor = Color.Gray,
                         containerColor = Color.Transparent,
@@ -126,8 +157,9 @@ fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modi
             }
 
         }
-
     }
+
+
 }
 
 @Composable
@@ -137,7 +169,7 @@ fun FilterDivider() {
 }
 
 @Composable
-fun DateRangeInvoiceFilter(filter: MutableState<InvoiceFilter>, viewModel: InvoiceFilterViewModel) {
+fun DateRangeInvoiceFilter(filter: MutableState<InvoiceFilter>, dateError: MutableState<Boolean>) {
 
     val startDate =
         if (filter.value.isDefaultStartDate()) "" else parseDateFromYYYYMMDD(filter.value.startDate)
@@ -155,9 +187,9 @@ fun DateRangeInvoiceFilter(filter: MutableState<InvoiceFilter>, viewModel: Invoi
             style = MaterialTheme.typography.titleSmall
         )
         Row {
-            DatePickerInvoice("Desde:", startDate, filter, Modifier.weight(1f))
+            DatePickerInvoice("Desde:", startDate, filter, dateError, Modifier.weight(1f))
             Spacer(Modifier.weight(0.1f))
-            DatePickerInvoice("Hasta:", endDate, filter, Modifier.weight(1f))
+            DatePickerInvoice("Hasta:", endDate, filter, dateError, Modifier.weight(1f))
         }
 
     }
@@ -168,7 +200,8 @@ fun DatePickerInvoice(
     text: String,
     value: String,
     filter: MutableState<InvoiceFilter>,
-    modifier: Modifier = Modifier
+    dateError: MutableState<Boolean>,
+    modifier: Modifier = Modifier,
 ) {
     var selectedDate by remember { mutableStateOf<String?>(value) }
     var showModal by remember { mutableStateOf(false) }
@@ -176,10 +209,15 @@ fun DatePickerInvoice(
     Column(modifier = modifier) {
         Text(text, color = Color.LightGray)
         OutlinedTextField(
-            value = selectedDate!!,
+            value = value,
             onValueChange = {},
             label = { Text("dia/mes/año") },
-            placeholder = { Text("DD/MM/YYYY") },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = if (dateError.value) Color.Red else MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = if (dateError.value) Color.Red else MaterialTheme.colorScheme.outline,
+                errorBorderColor = Color.Red
+            ),
+            readOnly = true,
             modifier = Modifier
                 .fillMaxWidth()
                 .pointerInput(selectedDate) {
@@ -209,6 +247,7 @@ fun DatePickerInvoice(
 //                        viewModel.setEndDate(selectedDate!!)
                         filter.value = filter.value.copy(endDate = selectedDate!!)
                     }
+                    dateError.value = false
                 },
                 onDismiss = { showModal = false }
             )
@@ -222,7 +261,6 @@ fun RangeSliderAmount(
     //onValueChange: (Float) -> Unit,
     valueRange: ClosedFloatingPointRange<Float>,
     filter: MutableState<InvoiceFilter>,
-    viewModel: InvoiceFilterViewModel,
     steps: Int = 0
 ) {
     var sliderValue by remember { mutableStateOf(valueRange) }
@@ -275,7 +313,7 @@ fun RangeSliderAmount(
 }
 
 @Composable
-fun StatusFilter(filter: MutableState<InvoiceFilter>, viewModel: InvoiceFilterViewModel) {
+fun StatusFilter(filter: MutableState<InvoiceFilter>) {
     Column(Modifier.padding(top = 30.dp)) {
         Text(
             "Por estado",
@@ -320,12 +358,13 @@ fun StatusItem(text: String, value: Boolean, onChange: (Boolean) -> Unit = {}) {
 }
 
 
+@SuppressLint("DefaultLocale")
 private fun ClosedFloatingPointRange<Float>.toFormatString(): String {
     return String.format("%.0f € - %.0f €", start, endInclusive)
 }
 
 private fun convertMillisToDate(millis: Long): String {
-    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     return formatter.format(Date(millis))
 }
 

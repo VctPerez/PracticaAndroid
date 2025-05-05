@@ -1,5 +1,7 @@
 package com.viewnext.practicaandroid.domain.data
 
+import com.viewnext.practicaandroid.domain.parseDateToYYYYMMDD
+
 const val DEFAULT_START_DATE = "0001-01-01"
 const val DEFAULT_END_DATE = "9999-12-31"
 const val DEFAULT_MIN_AMOUNT = 0f
@@ -18,9 +20,15 @@ data class InvoiceFilter(
 )
 
 fun InvoiceFilter.isEmpty(): Boolean {
-    return startDate == DEFAULT_START_DATE && endDate == DEFAULT_END_DATE &&
-            minAmount == DEFAULT_MIN_AMOUNT && maxAmount == DEFAULT_MAX_AMOUNT &&
-            !isPaid && !isCancelled && !isFixedFee && !isPending && !isPaymentPlan
+    return startDate == DEFAULT_START_DATE &&
+            endDate == DEFAULT_END_DATE &&
+            minAmount == DEFAULT_MIN_AMOUNT &&
+            maxAmount == DEFAULT_MAX_AMOUNT &&
+            !isPaid &&
+            !isCancelled &&
+            !isFixedFee &&
+            !isPending &&
+            !isPaymentPlan
 }
 
 fun InvoiceFilter.isDefaultStartDate(): Boolean {
@@ -29,4 +37,8 @@ fun InvoiceFilter.isDefaultStartDate(): Boolean {
 
 fun InvoiceFilter.isDefaultEndDate(): Boolean {
     return endDate == DEFAULT_END_DATE
+}
+
+fun InvoiceFilter.minDateGreaterThanEndDate(): Boolean {
+    return startDate > endDate
 }

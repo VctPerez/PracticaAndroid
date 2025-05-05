@@ -20,6 +20,11 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    tasks.withType<Test> {
+        useJUnitPlatform()
+        jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -66,7 +71,15 @@ dependencies {
 
     runtimeOnly(libs.androidx.material.icons.extended)
 
-    testImplementation(libs.junit)
+    testImplementation (libs.junit.jupiter)
+    testImplementation (libs.junit.jupiter.api)
+    testImplementation (libs.junit.jupiter.params)
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testRuntimeOnly (libs.junit.jupiter.engine)
+    testRuntimeOnly(libs.junit.platform.launcher)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

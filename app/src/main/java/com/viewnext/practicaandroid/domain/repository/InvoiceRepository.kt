@@ -47,13 +47,11 @@ class InvoiceRepositoryWrapper(
 
     override suspend fun getInvoices(): InvoicesResponse {
         if(firstLoad) {
-            Log.d("", "firstLoad")
             val invoicesResponse = networkInvoiceRepository.getInvoices()
             offlineInvoiceRepository.insertInvoices(parseInvoicesDateToDB(invoicesResponse.invoices))
             firstLoad = false
             return invoicesResponse
         }else{
-            Log.d("", "offline")
             val invoicesResponse = offlineInvoiceRepository.getInvoices()
             val parseCopy = invoicesResponse.copy(
                 invoices = parseInvoicesDateFromDB(invoicesResponse.invoices)
@@ -75,6 +73,7 @@ class InvoiceRepositoryWrapper(
 
 class OfflineInvoiceRepository(
     private val invoiceDao: InvoiceDao
+
 ) : InvoiceRepository {
     override suspend fun getInvoices(): InvoicesResponse {
         val invoiceList = invoiceDao.getAllInvoices().first()
@@ -89,7 +88,8 @@ class OfflineInvoiceRepository(
             filter.startDate, filter.endDate,
             filter.isPaid, filter.isCancelled,
             filter.isFixedFee, filter.isPending,
-            filter.isPaymentPlan).first()
+            filter.isPaymentPlan)
+            .first()
         return InvoicesResponse(
             invoices = filteredInvoices,
             total = filteredInvoices.size,

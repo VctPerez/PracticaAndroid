@@ -1,8 +1,6 @@
 package com.viewnext.practicaandroid.dataretrofit
 
 import android.content.Context
-import android.util.Log
-import androidx.compose.ui.platform.LocalContext
 import co.infinum.retromock.Retromock
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.viewnext.practicaandroid.core.db.InvoiceDatabase
@@ -10,7 +8,7 @@ import com.viewnext.practicaandroid.dataretrofit.service.InvoiceApiService
 import com.viewnext.practicaandroid.dataretrofit.service.UserApiService
 import com.viewnext.practicaandroid.domain.repository.InvoiceRepository
 import com.viewnext.practicaandroid.domain.repository.InvoiceRepositoryWrapper
-import com.viewnext.practicaandroid.domain.repository.MockUserRepository
+import com.viewnext.practicaandroid.domain.repository.DefaultUserRepository
 import com.viewnext.practicaandroid.domain.repository.NetworkInvoiceRepository
 import com.viewnext.practicaandroid.domain.repository.OfflineInvoiceRepository
 import com.viewnext.practicaandroid.domain.repository.UserRepository
@@ -74,6 +72,6 @@ class DefaultAppContainer(private val context : Context) : AppContainer{
     }
 
     override val userRepository: UserRepository by lazy {
-        MockUserRepository(userApiService)
+        DefaultUserRepository(userApiService)
     }
 }

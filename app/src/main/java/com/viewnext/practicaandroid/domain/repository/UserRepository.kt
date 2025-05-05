@@ -7,7 +7,7 @@ interface UserRepository {
     suspend fun getUserDetails(): UserDetailsResponse
 }
 
-class MockUserRepository(
+class DefaultUserRepository(
     private val userService: UserApiService
 ) : UserRepository{
     override suspend fun getUserDetails(): UserDetailsResponse {
