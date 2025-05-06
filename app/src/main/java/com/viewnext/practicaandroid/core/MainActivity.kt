@@ -1,47 +1,104 @@
 package com.viewnext.practicaandroid.core
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.viewnext.practicaandroid.core.ui.CustomTopBar
+import com.viewnext.practicaandroid.core.ui.navigation.AppNavHost
+import com.viewnext.practicaandroid.core.ui.screens.InvoiceFilterScreen
+import com.viewnext.practicaandroid.core.ui.screens.InvoiceListScreen
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            PracticaAndroidTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+            PracticaAndroidTheme(dynamicColor = false) {
+                ApplicationComposable()
             }
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun ApplicationComposable(navController : NavHostController = rememberNavController()){
+    val navBackStackEntry = navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry.value?.destination
+    val showTopBar = currentDestination?.route != "main"
+    Scaffold(
+        topBar = {
+            if(showTopBar){
+                CustomTopBar(
+                    title = "Atrás",
+                    onInvoiceList = currentDestination?.route == "invoices",
+                    onFilter = currentDestination?.route == "invoices_filter",
+                    onBackButtonClick = {
+                        navController.popBackStack()
+                    },
+                    navigateToFilter = {
+                        navController.navigate("invoices_filter")
+                    }
+                )
+            }
+        }
+    ){innerPadding ->
+        AppNavHost(
+            navController = navController,
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        )
+    }
 }
 
-@Preview(showBackground = true)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun GreetingPreview() {
-    PracticaAndroidTheme {
-        Greeting("Android")
+fun TestMainScreen(){
+    Scaffold(modifier = Modifier.fillMaxSize(),
+        topBar = {CustomTopBar("Practica", false)})
+    {innerPadding ->
+
+        InvoiceListScreen(Modifier.padding(innerPadding))
+    }
+}
+
+@Composable
+fun TestFilterScreen(name: String, modifier: Modifier = Modifier) {
+    Scaffold(modifier = Modifier.fillMaxSize(),
+        topBar = {CustomTopBar("Practica", false)})
+    {innerPadding ->
+        InvoiceFilterScreen(null, Modifier.padding(innerPadding))
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showSystemUi = true)
+@Composable
+fun ListPreview() {
+    PracticaAndroidTheme(dynamicColor = false) {
+        TestMainScreen()
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun FilterPreview() {
+    PracticaAndroidTheme(dynamicColor = false) {
+        TestFilterScreen("Practica")
     }
 }

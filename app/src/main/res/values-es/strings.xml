@@ -1,19 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PracticaAndroid</string>
-    <string name="invoicelist_title">Invoices</string>
-    <string name="january_abr">Jan</string>
+    <string name="invoicelist_title">Facturas</string>
+    <string name="january_abr">Ene</string>
     <string name="february_abr">Feb</string>
     <string name="march_abr">Mar</string>
-    <string name="april_abr">Apr</string>
+    <string name="april_abr">Abr</string>
     <string name="may_abr">May</string>
     <string name="june_abr">Jun</string>
     <string name="july_abr">Jul</string>
-    <string name="august_abr">Aug</string>
+    <string name="august_abr">Ago</string>
     <string name="september_abr">Sep</string>
     <string name="october_abr">Oct</string>
     <string name="november_abr">Nov</string>
-    <string name="december_abr">Dec</string>
-    <string name="invoice_not_paid">Pending to be paid</string>
-    <string name="invoice_filter">Invoice Filter</string>
-
+    <string name="december_abr">Dic</string>
+    <string name="invoice_not_paid">Pendiente de pago</string>
+    <string name="invoice_filter">Filtrar Facturas</string>
 </resources>

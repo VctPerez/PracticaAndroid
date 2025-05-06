@@ -9,35 +9,50 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
+    primary = IberGreen,
     secondary = PurpleGrey80,
-    tertiary = Pink80
-)
+    tertiary = Pink80,
+    surface = Color(0xFF414855),
+    surfaceContainer = Color(0xFF414855),
+    surfaceContainerHigh = Color(0xFF414855),
+    onSurface = Color.Black,
+    background = Color.White,
+    onBackground = IberGreen,
+    error = Color.Red
+
+    )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
+    primary = IberGreen,
     secondary = PurpleGrey40,
-    tertiary = Pink40
+    tertiary = Pink40,
+    surface = Color.White,
+    surfaceContainer = Color.White,
+    surfaceContainerHigh = Color.White,
+    onSurface = Color.Black,
+    background = Color.White,
+    onBackground = Color.Black,
+    error = Color.Red
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+    /*Other default colors to override
     onPrimary = Color.White,
-    onSecondary = Color.White,
+    onSecondary = IberGreen,
     onTertiary = Color.White,
     onBackground = Color(0xFF1C1B1F),
     onSurface = Color(0xFF1C1B1F),
-    */
+
+     */
 )
 
 @Composable
 fun PracticaAndroidTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
