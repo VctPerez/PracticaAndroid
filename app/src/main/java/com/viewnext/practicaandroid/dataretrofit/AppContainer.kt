@@ -5,11 +5,13 @@ import co.infinum.retromock.Retromock
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.viewnext.practicaandroid.core.db.InvoiceDatabase
 import com.viewnext.practicaandroid.dataretrofit.service.InvoiceApiService
+import com.viewnext.practicaandroid.dataretrofit.service.NewsService
 import com.viewnext.practicaandroid.dataretrofit.service.UserApiService
 import com.viewnext.practicaandroid.domain.repository.InvoiceRepository
 import com.viewnext.practicaandroid.domain.repository.InvoiceRepositoryWrapper
 import com.viewnext.practicaandroid.domain.repository.DefaultUserRepository
 import com.viewnext.practicaandroid.domain.repository.NetworkInvoiceRepository
+import com.viewnext.practicaandroid.domain.repository.NewsRepository
 import com.viewnext.practicaandroid.domain.repository.OfflineInvoiceRepository
 import com.viewnext.practicaandroid.domain.repository.UserRepository
 import kotlinx.serialization.json.Json
@@ -19,6 +21,7 @@ import okhttp3.MediaType.Companion.toMediaType
 interface AppContainer {
     val invoiceRepository: InvoiceRepository
     val userRepository: UserRepository
+    val newsRepository: NewsRepository
 }
 
 class DefaultAppContainer(private val context : Context) : AppContainer{
@@ -38,19 +41,24 @@ class DefaultAppContainer(private val context : Context) : AppContainer{
         }
     }
 
-    private val retrofit : Retrofit = Retrofit.Builder()
+    private val invoicesRetrofit : Retrofit = Retrofit.Builder()
         .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
         .baseUrl(invoicesBaseUrl)
         .build()
 
-    private val retromock = Retromock.Builder().retrofit(retrofit)
+    private val retromock = Retromock.Builder().retrofit(invoicesRetrofit)
         .defaultBodyFactory(context.assets::open).build()
+
+    private val newsRetrofit: Retrofit = Retrofit.Builder()
+        .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+        .baseUrl("https://newsapi.org/v2/")
+        .build()
 
     private val invoiceApiService: InvoiceApiService
         get() = if (useRetromock) {
             retromock.create(InvoiceApiService::class.java)
         } else {
-            retrofit.create(InvoiceApiService::class.java)
+            invoicesRetrofit.create(InvoiceApiService::class.java)
         }
 
 
@@ -73,5 +81,13 @@ class DefaultAppContainer(private val context : Context) : AppContainer{
 
     override val userRepository: UserRepository by lazy {
         DefaultUserRepository(userApiService)
+    }
+
+    private val newsApiService: NewsService by lazy {
+        newsRetrofit.create(NewsService::class.java)
+    }
+
+    override val newsRepository: NewsRepository by lazy {
+        NewsRepository(newsApiService)
     }
 }
