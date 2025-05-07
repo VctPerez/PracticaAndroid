@@ -16,5 +16,6 @@ val LightIberGreen = Color(0xFFBFFF87)
 val IberOrange = Color(0xFFFDB63C)
 val IberBlue = Color(0xFF41C2FD)
 val InfoBlue = Color(0xFAA3C9E3)
+val NewsGray = Color(0xFFD7D7D7)
 
 val RetromockLighRed = Color(0xFFFF8080)
