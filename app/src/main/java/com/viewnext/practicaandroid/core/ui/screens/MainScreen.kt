@@ -249,11 +249,11 @@ fun NewsCard(newsArticle: NewsArticle){
             CoilImage(
                 imageUrl = newsArticle.urlToImage!!,
                 modifier = Modifier
-                    .size(100.dp)
+                    .height(100.dp).width(100.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .border(BorderStroke(2.dp, IberGreen), RoundedCornerShape(16.dp))
+//                    .border(BorderStroke(2.dp, IberGreen), RoundedCornerShape(16.dp))
             )
-            Column(modifier = Modifier.padding(10.dp)) {
+            Column(modifier = Modifier.padding(10.dp).fillMaxWidth()) {
                 Text(text = newsArticle.title,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 20.sp,

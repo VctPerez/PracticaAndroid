@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -214,7 +215,8 @@ fun CoilImage(imageUrl: String, modifier: Modifier = Modifier) {
     Image( // The Image component to load the image with the Coil library
         painter = rememberImagePainter(data = imageUrl),
         contentDescription = imageUrl,
-        modifier = modifier
+        modifier = modifier,
+        contentScale = ContentScale.Crop
     )
 }
 
