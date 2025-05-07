@@ -70,6 +70,8 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     runtimeOnly(libs.androidx.material.icons.extended)
+    implementation(libs.coil.compose)
+    implementation(libs.dotenv.kotlin)
 
     testImplementation (libs.junit.jupiter)
     testImplementation (libs.junit.jupiter.api)
