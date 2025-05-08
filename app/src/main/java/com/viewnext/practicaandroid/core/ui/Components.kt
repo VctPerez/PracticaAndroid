@@ -75,6 +75,7 @@ fun CustomTopBar(
                         modifier = Modifier
                             .size(35.dp)
                             .padding(0.dp),
+                        tint = IberGreen
                     )
                 }
             }
@@ -86,20 +87,20 @@ fun CustomTopBar(
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            titleContentColor = IberGreen,
             navigationIconContentColor = MaterialTheme.colorScheme.onSurface
         ),
         actions = {
             if (onInvoiceList) {
                 IconButton(onClick = navigateToFilter) {
-                    Image(
+                    Icon(
                         painter = painterResource(R.drawable.filtericon_3x),
                         contentDescription = "Filter",
                     )
                 }
             } else if (onFilter) {
                 IconButton(onClick = onBackButtonClick) {
-                    Image(
+                    Icon(
                         painter = painterResource(R.drawable.close_icon),
                         contentDescription = "Back",
                     )

@@ -41,9 +41,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -60,6 +63,7 @@ import com.viewnext.practicaandroid.core.ui.theme.IberBlue
 import com.viewnext.practicaandroid.core.ui.theme.IberGreen
 import com.viewnext.practicaandroid.core.ui.theme.IberOrange
 import com.viewnext.practicaandroid.core.ui.theme.LightIberGreen
+import com.viewnext.practicaandroid.core.ui.theme.NewsGray
 import com.viewnext.practicaandroid.core.ui.theme.Pink90
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 import com.viewnext.practicaandroid.core.ui.theme.RetromockLighRed
@@ -147,9 +151,12 @@ fun NewsContent(){
 @Composable
 fun RetromockActionButton() {
     val context = LocalContext.current
+    val mockStatus = remember{ mutableStateOf(false)}
+
     ExtendedFloatingActionButton(
         onClick = {
             DefaultAppContainer.toggleMocking()
+            mockStatus.value = !mockStatus.value
             Toast.makeText(
                 context,
                 "Retromock ${if (DefaultAppContainer.isMocking()) "enabled" else "disabled"}",
@@ -157,7 +164,7 @@ fun RetromockActionButton() {
             ).show()
         },
         shape = CircleShape,
-        containerColor = RetromockLighRed,
+        containerColor = if(mockStatus.value) IberGreen else RetromockLighRed,
         icon = {
             Icon(
                 painter = painterResource(R.drawable.ic_retromock),
@@ -220,14 +227,47 @@ fun NewsList(
     newsList: List<NewsArticle>,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
-        items(newsList) {
-            NewsCard(it)
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(start=8.dp, end=8.dp, bottom=5.dp, top = 5.dp)
+        ) {
+            items(newsList) {
+                NewsCard(it)
+            }
         }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(32.dp)
+                .align(Alignment.TopCenter)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White, // o el fondo de tu app
+                            Color.Transparent
+                        )
+                    )
+                )
+        )
+
+        // Fade abajo
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(32.dp)
+                .align(Alignment.BottomCenter)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            Color.White // o el fondo de tu app
+                        )
+                    )
+                )
+        )
     }
 }
 
@@ -238,7 +278,7 @@ fun NewsCard(newsArticle: NewsArticle){
             .fillMaxWidth()
             .padding(8.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = LightIberGreen),
+        colors = CardDefaults.cardColors(containerColor = NewsGray),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Row(

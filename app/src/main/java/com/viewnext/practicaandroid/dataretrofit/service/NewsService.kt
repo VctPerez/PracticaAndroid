@@ -13,6 +13,6 @@ val API_KEY: String = dotenv["NEWS_API_KEY"]
 
 interface NewsService {
 
-    @GET("everything?q=iberdrola&languange=es&pageSize=10")
+    @GET("everything?q=iberdrola&language=es&pageSize=10")
     suspend fun getNews(@Query("apiKey") apiKey: String = API_KEY): NewsResponse
 }
