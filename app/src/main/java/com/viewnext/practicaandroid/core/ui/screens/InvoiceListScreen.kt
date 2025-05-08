@@ -72,9 +72,11 @@ fun InvoiceListScreen(modifier: Modifier = Modifier) {
 
 //    Log.d("filtro:", invoiceFilterViewModel.uiState.collectAsState().value.filter.toString())
 
-    Column(modifier = modifier.fillMaxSize().padding(start = 22.dp)){
+    Column(modifier = modifier
+        .fillMaxSize()
+        .padding(start = 22.dp)){
         Text(stringResource(R.string.invoicelist_title), style = MaterialTheme.typography.titleLarge)
-        //TODO: Add loading and error screen
+
         if(state.isLoading){
             LoadingInvoicesScreen()
         } else if(state.error != null){
@@ -117,13 +119,15 @@ fun InvoiceItem(invoice : InvoiceEntity, modifier: Modifier = Modifier){
     Column(modifier = Modifier.fillMaxWidth()){
 
         if(showDialog){
-            IberDialogPopup("Información", "Esta funcionalidad no está disponible",
+            IberDialogPopup(
+                stringResource(R.string.infoDialogTitle), stringResource(R.string.infoDialogMessage),
                 "Cerrar", onDismiss = {
                     showDialog = false
                 })
         }
 
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+            .fillMaxWidth()
             .padding(top = 5.dp, bottom = 5.dp))
         {
             Column {
@@ -140,7 +144,9 @@ fun InvoiceItem(invoice : InvoiceEntity, modifier: Modifier = Modifier){
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = "Arrow",
-                    modifier = Modifier.size(35.dp).padding(0.dp),
+                    modifier = Modifier
+                        .size(35.dp)
+                        .padding(0.dp),
                 )
             }
         }

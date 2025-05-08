@@ -51,6 +51,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -79,28 +80,30 @@ fun MainScreen(
 ) {
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface),
         floatingActionButton = {
             RetromockActionButton()
         }
     ) { innerPadding ->
         Column(
             modifier = modifier
-                .fillMaxSize()
+                .fillMaxSize().background(MaterialTheme.colorScheme.surface)
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 painter = painterResource(R.drawable.logo),
                 contentDescription = "Logo",
-                modifier = Modifier.width(350.dp).height(100.dp)
+                modifier = Modifier
+                    .width(350.dp)
+                    .height(100.dp)
             )
 
             Row(Modifier
                 .fillMaxWidth()
                 .padding(12.dp)) {
                 MainScreenButton(
-                    text = "Facturas",
+                    text = stringResource(R.string.invoicelist_title),
                     icon = Icons.Rounded.ShoppingCart,
                     containerColor = IberOrange,
                     modifier = Modifier.weight(1f),
@@ -115,8 +118,10 @@ fun MainScreen(
                     onClick = navigateToSmartSolar
                 )
             }
-            HorizontalDivider()
-            Text("News", style = MaterialTheme.typography.titleLarge,
+            HorizontalDivider(color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp))
+            Text(
+                stringResource(R.string.newsTitle), style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(8.dp)
             )
@@ -159,7 +164,10 @@ fun RetromockActionButton() {
             mockStatus.value = !mockStatus.value
             Toast.makeText(
                 context,
-                "Retromock ${if (DefaultAppContainer.isMocking()) "enabled" else "disabled"}",
+                "Retromock ${
+                    if (DefaultAppContainer.isMocking()) context.getString(R.string.retromockEnabled) 
+                    else context.getString(R.string.retormockDisabled)
+                }",
                 Toast.LENGTH_SHORT
             ).show()
         },
@@ -231,7 +239,7 @@ fun NewsList(
         LazyColumn(
             modifier = modifier
                 .fillMaxSize()
-                .padding(start=8.dp, end=8.dp, bottom=5.dp, top = 5.dp)
+                .padding(start = 8.dp, end = 8.dp, bottom = 5.dp, top = 5.dp)
         ) {
             items(newsList) {
                 NewsCard(it)
@@ -246,7 +254,7 @@ fun NewsList(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            Color.White, // o el fondo de tu app
+                            MaterialTheme.colorScheme.background, // o el fondo de tu app
                             Color.Transparent
                         )
                     )
@@ -263,7 +271,7 @@ fun NewsList(
                     Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
-                            Color.White // o el fondo de tu app
+                            MaterialTheme.colorScheme.background // o el fondo de tu app
                         )
                     )
                 )
@@ -282,27 +290,36 @@ fun NewsCard(newsArticle: NewsArticle){
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().height(100.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             CoilImage(
                 imageUrl = newsArticle.urlToImage!!,
                 modifier = Modifier
-                    .height(100.dp).width(100.dp)
+                    .height(100.dp)
+                    .width(100.dp)
                     .clip(RoundedCornerShape(16.dp))
 //                    .border(BorderStroke(2.dp, IberGreen), RoundedCornerShape(16.dp))
             )
-            Column(modifier = Modifier.padding(10.dp).fillMaxWidth()) {
+            Column(modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth()) {
                 Text(text = newsArticle.title,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 20.sp,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.wrapContentWidth().basicMarquee())
+                    color = Color.Black,
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .basicMarquee())
                 Spacer(Modifier.size(5.dp))
                 Text(text = newsArticle.description?: newsArticle.title,
                     style = MaterialTheme.typography.bodySmall,
                     overflow = TextOverflow.Ellipsis,
+                    color = Color.Black,
                     modifier = Modifier.wrapContentWidth())
             }
         }

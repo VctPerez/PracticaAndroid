@@ -185,7 +185,7 @@ fun IberDialogPopup(
             {
                 Text(
                     text = title,
-                    color = if (error) Color.Red else Color.Black,
+                    color = if (error) Color.Red else MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
 //                    fontSize = 30.sp,

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PracticaAndroid</string>
     <string name="invoicelist_title">Facturas</string>
@@ -15,5 +14,40 @@
     <string name="november_abr">Nov</string>
     <string name="december_abr">Dic</string>
     <string name="invoice_not_paid">Pendiente de pago</string>
-    <string name="invoice_filter">Filtrar Facturas</string>
+    <string name="invoice_filter">Filtar facturas</string>
+    <string name="datePickerLabel">día/mes/año</string>
+    <string name="datePickerFrom">Desde:</string>
+    <string name="datePickerTo">Hasta:</string>
+    <string name="filterIssueDate">Con fecha de emisión:</string>
+    <string name="filterAmount">"Por un importe: "</string>
+    <string name="filterStatus">Por estado:</string>
+    <string name="filterCheckBoxPaid">Pagadas</string>
+    <string name="filterCheckBox">Anuladas</string>
+    <string name="filterCheckBoxFixedFee">Cuota fija</string>
+    <string name="filterCheckBoxPending">Pendiente de pago</string>
+    <string name="filterCheckBoxPlan">Plan de pago</string>
+    <string name="clearFiltersButton">Eliminar filtros</string>
+    <string name="applyFiltersButton">Aplicar filtros</string>
+    <string name="errorDialogButton">Aceptar</string>
+    <string name="datePickerErrorMessage">La fecha de inicio debe ser menor o igual a la fecha de fin.</string>
+    <string name="datePickerErrorTitle">Fechas no válidas</string>
+    <string name="infoDialogTitle">Información</string>
+    <string name="infoDialogMessage">Esta función no está disponible.</string>
+    <string name="retromockEnabled">activado</string>
+    <string name="retormockDisabled">desactivado</string>
+    <string name="newsTitle">Noticias</string>
+    <string name="smartSolarFixture">Mi instalación</string>
+    <string name="smartSolarEnergy">Energía</string>
+    <string name="smartSolarDetails">Detalles</string>
+    <string name="fixtureMessage">Aquí tienes los datos de tu instalación fotovoltaica en tiempo real.</string>
+    <string name="fixtureSelfConsumption">Autoconsumo:</string>
+    <string name="smartSolarEnergyMessage">Estamos trabajando para mejorar la app. Tus paneles solares siguen produciendo, pronto podrás volver a ver tu producción solar. Sentimos las molestias.</string>
+    <string name="smartSolarDetailsCAU">CAU (Código de autoconsumo)</string>
+    <string name="smartSolarDetailsStatus">Estado solicitud alta consumidor</string>
+    <string name="smartSolarSelfConsumptionType">Tipo autoconsumo</string>
+    <string name="smartSolarDetailsCompensation">Compensación de excedentes</string>
+    <string name="smartSolarDetailsPower">Potencia de instalación</string>
+    <string name="requestStatusTitle">Estado solicitud autoconsumo</string>
+    <string name="requestStatusMessage">El tiempo estimado de activación de tu autoconsumo es de 1 a 2 meses, este variará según tu comunidad autónoma y distribuidora.</string>
+    <string name="requestStatusButton">Aceptar</string>
 </resources>
