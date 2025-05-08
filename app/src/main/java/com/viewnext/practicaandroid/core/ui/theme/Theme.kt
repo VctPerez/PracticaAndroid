@@ -20,8 +20,8 @@ private val DarkColorScheme = darkColorScheme(
     surfaceContainer = Color(0xFF414855),
     surfaceContainerHigh = Color(0xFF414855),
     onSurface = Color.Black,
-    background = Color.White,
-    onBackground = IberGreen,
+    background = Color(0xFF414855),
+    onBackground = Color.White,
     error = Color.Red
 
     )

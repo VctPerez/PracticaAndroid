@@ -91,14 +91,14 @@ fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modi
 
     if(showErrorDialog.value){
         IberDialogPopup(
-            "Fechas invalidas",
-            "La fecha de inicio no puede ser mayor que la fecha de fin",
+            stringResource(R.string.datePickerErrorTitle),
+            stringResource(R.string.datePickerErrorMessage),
             error = true,
             onDismiss = {
                 showErrorDialog.value = false
 //                dateError.value = false
             },
-            buttonText = "Aceptar"
+            buttonText = stringResource(R.string.errorDialogButton)
         )
     }
     Column(
@@ -141,7 +141,7 @@ fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modi
                         disabledContentColor = Color.White,
                     )
                 ) {
-                    Text("Aplicar filtros", textAlign = TextAlign.Center)
+                    Text(stringResource(R.string.applyFiltersButton), textAlign = TextAlign.Center)
                 }
                 TextButton(
                     onClick = { newFilter.value = InvoiceFilter() },
@@ -152,7 +152,7 @@ fun InvoiceFilterScreen(navController: NavController?, modifier: Modifier = Modi
                         disabledContentColor = Color.LightGray
                     )
                 ) {
-                    Text("Eliminar filtros", textAlign = TextAlign.Center)
+                    Text(stringResource(R.string.clearFiltersButton), textAlign = TextAlign.Center)
                 }
             }
 
@@ -182,14 +182,14 @@ fun DateRangeInvoiceFilter(filter: MutableState<InvoiceFilter>, dateError: Mutab
             .padding(top = 30.dp)
     ) {
         Text(
-            "Con fecha de emisión:",
+            stringResource(R.string.filterIssueDate),
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.titleSmall
         )
         Row {
-            DatePickerInvoice("Desde:", startDate, filter, dateError, Modifier.weight(1f))
+            DatePickerInvoice(stringResource(R.string.datePickerFrom), startDate, filter, dateError, Modifier.weight(1f))
             Spacer(Modifier.weight(0.1f))
-            DatePickerInvoice("Hasta:", endDate, filter, dateError, Modifier.weight(1f))
+            DatePickerInvoice(stringResource(R.string.datePickerTo), endDate, filter, dateError, Modifier.weight(1f))
         }
 
     }
@@ -211,7 +211,7 @@ fun DatePickerInvoice(
         OutlinedTextField(
             value = value,
             onValueChange = {},
-            label = { Text("dia/mes/año") },
+            label = { Text(stringResource(R.string.datePickerLabel)) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = if (dateError.value) Color.Red else MaterialTheme.colorScheme.primary,
                 unfocusedBorderColor = if (dateError.value) Color.Red else MaterialTheme.colorScheme.outline,
@@ -235,10 +235,11 @@ fun DatePickerInvoice(
         )
 
         if (showModal) {
+            val fromString = stringResource(R.string.datePickerFrom)
             DatePickerModal(
                 onDateSelected = { date ->
                     selectedDate = date?.let { convertMillisToDate(it) } ?: ""
-                    if (text.lowercase() == "desde:") {
+                    if (text.lowercase() == fromString.lowercase()) {
 //                        Log.d("DatePickerInvoice", "Desde: $it")
 //                        viewModel.setStartDate(selectedDate!!)
                         filter.value = filter.value.copy(startDate = selectedDate!!)
@@ -267,7 +268,7 @@ fun RangeSliderAmount(
 
     Column(Modifier.padding(top = 30.dp)) {
         Text(
-            "Por un importe",
+            stringResource(R.string.filterAmount),
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.titleSmall
         )
@@ -316,29 +317,29 @@ fun RangeSliderAmount(
 fun StatusFilter(filter: MutableState<InvoiceFilter>) {
     Column(Modifier.padding(top = 30.dp)) {
         Text(
-            "Por estado",
+            stringResource(R.string.filterStatus),
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.titleSmall
         )
         StatusItem(
-            "Pagadas",
+            stringResource(R.string.filterCheckBoxPaid),
             filter.value.isPaid,
             onChange = { filter.value = filter.value.copy(isPaid = it) }
         )
         StatusItem(
-            "Anuladas",
+            stringResource(R.string.filterCheckBox),
             filter.value.isCancelled,
             onChange = { filter.value = filter.value.copy(isCancelled = it) })
         StatusItem(
-            "Cuota Fija",
+            stringResource(R.string.filterCheckBoxFixedFee),
             filter.value.isFixedFee,
             onChange = { filter.value = filter.value.copy(isFixedFee = it) })
         StatusItem(
-            "Pendientes de pago",
+            stringResource(R.string.filterCheckBoxPending),
             filter.value.isPending,
             onChange = { filter.value = filter.value.copy(isPending = it) })
         StatusItem(
-            "Plan de pago",
+            stringResource(R.string.filterCheckBoxPlan),
             filter.value.isPaymentPlan,
             onChange = { filter.value = filter.value.copy(isPaymentPlan = it) })
     }

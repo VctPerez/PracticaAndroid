@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,7 +46,9 @@ import com.viewnext.practicaandroid.domain.data.UserDetailsResponse
 @Composable
 fun SmartSolarScreen(modifier: Modifier = Modifier){
 
-    val tabs = listOf("Mi instalacion", "Energía", "Detalles")
+    val tabs = listOf(stringResource(R.string.smartSolarFixture),
+        stringResource(R.string.smartSolarEnergy), stringResource(R.string.smartSolarDetails)
+    )
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     val viewModel : UserViewModel = viewModel(factory = UserViewModel.Factory)
@@ -80,7 +83,8 @@ fun SmartSolarScreen(modifier: Modifier = Modifier){
 @Composable
 fun InstalationTab(){
     Column(modifier = Modifier.padding(top = 10.dp)){
-        Text("Aquí tienes los datos de tu instalación fotovoltaica en tiempo real.",
+        Text(
+            stringResource(R.string.fixtureMessage),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -98,7 +102,8 @@ fun InstalationTab(){
 @Composable
 fun SelfConsumptionText(value : String){
     Row {
-        Text("Autoconsumo:",
+        Text(
+            stringResource(R.string.fixtureSelfConsumption),
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray,
             modifier = Modifier.padding(end = 7.dp)
@@ -113,7 +118,9 @@ fun SelfConsumptionText(value : String){
 
 @Composable
 fun EnergyTab(){
-    Column(modifier = Modifier.fillMaxWidth().padding(top = 60.dp),
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 60.dp),
             verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
         Image(
@@ -122,8 +129,8 @@ fun EnergyTab(){
             Modifier.size(240.dp)
         )
         Spacer(Modifier.size(75.dp))
-        Text("Estamos trabajando en mejorar la App. Tus paneles solares siguen produciendo, " +
-                "en breve podrás seguir viendo tu producción solar. Sentimos las molestias.",
+        Text(
+            stringResource(R.string.smartSolarEnergyMessage),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center,
@@ -134,12 +141,18 @@ fun EnergyTab(){
 
 @Composable
 fun DetailsTab(userDetails: UserDetailsResponse){
-    Column(modifier = Modifier.fillMaxWidth().padding(top = 30.dp),){
-        DetailsTextField(userDetails.cau, {}, "CAU (Código Autoconsumo)")
-        DetailsTextField(userDetails.requestStatus, {}, "Estado solicitud alta consumidor", info = true)
-        DetailsTextField(userDetails.type, {}, "Tipo autoconsumo")
-        DetailsTextField(userDetails.compensation, {}, "Compensación de excedentes")
-        DetailsTextField(userDetails.installationPower, {}, "Potencia de instalación")
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 30.dp),){
+        DetailsTextField(userDetails.cau, {}, stringResource(R.string.smartSolarDetailsCAU))
+        DetailsTextField(userDetails.requestStatus, {},
+            stringResource(R.string.smartSolarDetailsStatus), info = true)
+        DetailsTextField(userDetails.type, {},
+            stringResource(R.string.smartSolarSelfConsumptionType))
+        DetailsTextField(userDetails.compensation, {},
+            stringResource(R.string.smartSolarDetailsCompensation))
+        DetailsTextField(userDetails.installationPower, {},
+            stringResource(R.string.smartSolarDetailsPower))
     }
 }
 
@@ -154,10 +167,9 @@ fun DetailsTextField(
     var showRequestStatus by remember { mutableStateOf(false) }
     if(showRequestStatus){
         IberDialogPopup(
-            "Estado solicitud autoconsumo",
-            "El tiempo estimado de activación de tu autoconsumo es de 1 a 2 meses, este " +
-                    "variará en función de tu comunidad autónoma y distribuidora.",
-            "Aceptar", onDismiss = {
+            stringResource(R.string.requestStatusTitle),
+            stringResource(R.string.requestStatusMessage),
+            stringResource(R.string.requestStatusButton), onDismiss = {
                 showRequestStatus = false
             })
     }
@@ -167,7 +179,9 @@ fun DetailsTextField(
         enabled = false,
         onValueChange = onValueChange,
         label = { Text(label) },
-        modifier = modifier.fillMaxWidth().padding(bottom = 15.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = 15.dp),
         colors = TextFieldDefaults.colors(
             disabledContainerColor = Color.Transparent,
             focusedContainerColor = Color.Transparent,
