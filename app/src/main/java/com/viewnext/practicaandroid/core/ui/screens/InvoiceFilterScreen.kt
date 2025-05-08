@@ -4,6 +4,7 @@ package com.viewnext.practicaandroid.core.ui.screens
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
@@ -215,7 +216,9 @@ fun DatePickerInvoice(
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = if (dateError.value) Color.Red else MaterialTheme.colorScheme.primary,
                 unfocusedBorderColor = if (dateError.value) Color.Red else MaterialTheme.colorScheme.outline,
-                errorBorderColor = Color.Red
+                errorBorderColor = Color.Red,
+                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                unfocusedTextColor = MaterialTheme.colorScheme.onBackground
             ),
             readOnly = true,
             modifier = Modifier
@@ -274,7 +277,7 @@ fun RangeSliderAmount(
         )
 
         Text(
-            sliderValue.toFormatString(),
+            (filter.value.minAmount..filter.value.maxAmount).toFormatString(),
             color = IberGreen,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
@@ -354,7 +357,7 @@ fun StatusItem(text: String, value: Boolean, onChange: (Boolean) -> Unit = {}) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(value, onCheckedChange = onChange)
-        Text(text)
+        Text(text, modifier = Modifier.clickable { onChange(!value)})
     }
 }
 

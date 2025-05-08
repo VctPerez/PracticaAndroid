@@ -156,7 +156,7 @@ fun NewsContent(){
 @Composable
 fun RetromockActionButton() {
     val context = LocalContext.current
-    val mockStatus = remember{ mutableStateOf(false)}
+    val mockStatus = remember{ mutableStateOf(DefaultAppContainer.isMocking())}
 
     ExtendedFloatingActionButton(
         onClick = {
