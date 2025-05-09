@@ -50,5 +50,6 @@
     <string name="requestStatusTitle">Self-consumption request status</string>
     <string name="requestStatusMessage">The estimated activation time for your self-consumption is 1 to 2 months; this will vary depending on your autonomous community and distributor.</string>
     <string name="requestStatusButton">OK</string>
+    <string name="invoicesEmptyList">No invoices were found.</string>
 
 </resources>

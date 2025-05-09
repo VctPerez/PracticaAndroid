@@ -26,9 +26,9 @@ interface InvoiceDao {
     @Query("SELECT * FROM invoices WHERE date BETWEEN :startDate AND :endDate " +
             "AND amount BETWEEN :minAmount AND :maxAmount " +
             "AND ((:isPaid AND status = 'Pagada' OR  " +
-            "       :isCancelled AND status = 'Cancelada' AND " +
-            "       :isFixedFee AND status = 'Cuota Fija' AND" +
-            "       :isPending AND status = 'Pendiente' AND " +
+            "       :isCancelled AND status = 'Cancelada' OR " +
+            "       :isFixedFee AND status = 'Cuota Fija' OR" +
+            "       :isPending AND status = 'Pendiente de pago' OR " +
             "       :isPaymentPlan AND status = 'Plan de Pago') " +
             "    OR " +
             "       (NOT :isPaid AND  NOT :isCancelled AND NOT :isFixedFee " +

@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
@@ -25,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,47 +45,67 @@ import com.viewnext.practicaandroid.core.ui.theme.InfoBlue
 import com.viewnext.practicaandroid.core.ui.theme.PracticaAndroidTheme
 import com.viewnext.practicaandroid.core.ui.viewmodel.UserViewModel
 import com.viewnext.practicaandroid.domain.data.UserDetailsResponse
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
-fun SmartSolarScreen(modifier: Modifier = Modifier){
+fun SmartSolarScreen(modifier: Modifier = Modifier) {
 
-    val tabs = listOf(stringResource(R.string.smartSolarFixture),
+    val tabs = listOf(
+        stringResource(R.string.smartSolarFixture),
         stringResource(R.string.smartSolarEnergy), stringResource(R.string.smartSolarDetails)
     )
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        pageCount = { tabs.size }
+    )
+    val coroutineSscope = rememberCoroutineScope()
 
-    val viewModel : UserViewModel = viewModel(factory = UserViewModel.Factory)
+    val viewModel: UserViewModel = viewModel(factory = UserViewModel.Factory)
     val state by viewModel.state.collectAsState()
 
     Column(modifier = modifier.padding(start = 22.dp, end = 30.dp)) {
-        Text("Smart Solar",
+        Text(
+            "Smart Solar",
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.titleLarge
         )
         Spacer(Modifier.size(25.dp))
-        ScrollableTabRow(selectedTabIndex = selectedTabIndex,
+        ScrollableTabRow(
+            selectedTabIndex = pagerState.currentPage,
             modifier = Modifier.wrapContentWidth(align = Alignment.Start),
-            edgePadding = 0.dp, contentColor = MaterialTheme.colorScheme.onBackground) {
-            tabs.forEachIndexed{ index, title ->
+            edgePadding = 0.dp, contentColor = MaterialTheme.colorScheme.onBackground
+        ) {
+            tabs.forEachIndexed { index, title ->
                 Tab(
                     text = { Text(title) },
-                    selected = selectedTabIndex == index,
-                    onClick = { selectedTabIndex = index }
+                    selected = pagerState.currentPage == index,
+                    onClick = {
+                        coroutineSscope.launch {
+                            pagerState.animateScrollToPage(index)
+                        }
+                    }
                 )
             }
         }
 
-        when (selectedTabIndex) {
-            0 -> InstalationTab()
-            1 -> EnergyTab()
-            2 -> DetailsTab(state.userDetails)
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .weight(1f)
+        ) { page ->
+            when (page) {
+                0 -> InstalationTab()
+                1 -> EnergyTab()
+                2 -> DetailsTab(state.userDetails)
+            }
         }
     }
 }
 
 @Composable
-fun InstalationTab(){
-    Column(modifier = Modifier.padding(top = 10.dp)){
+fun InstalationTab() {
+    Column(modifier = Modifier.padding(top = 10.dp)) {
         Text(
             stringResource(R.string.fixtureMessage),
             style = MaterialTheme.typography.bodyMedium,
@@ -100,7 +123,7 @@ fun InstalationTab(){
 }
 
 @Composable
-fun SelfConsumptionText(value : String){
+fun SelfConsumptionText(value: String) {
     Row {
         Text(
             stringResource(R.string.fixtureSelfConsumption),
@@ -117,12 +140,14 @@ fun SelfConsumptionText(value : String){
 }
 
 @Composable
-fun EnergyTab(){
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 60.dp),
-            verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally) {
+fun EnergyTab() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 60.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Image(
             painter = painterResource(R.drawable.plan_gestiones),
             contentDescription = "Plan de gestiones",
@@ -140,19 +165,29 @@ fun EnergyTab(){
 }
 
 @Composable
-fun DetailsTab(userDetails: UserDetailsResponse){
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 30.dp),){
+fun DetailsTab(userDetails: UserDetailsResponse) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 30.dp),
+    ) {
         DetailsTextField(userDetails.cau, {}, stringResource(R.string.smartSolarDetailsCAU))
-        DetailsTextField(userDetails.requestStatus, {},
-            stringResource(R.string.smartSolarDetailsStatus), info = true)
-        DetailsTextField(userDetails.type, {},
-            stringResource(R.string.smartSolarSelfConsumptionType))
-        DetailsTextField(userDetails.compensation, {},
-            stringResource(R.string.smartSolarDetailsCompensation))
-        DetailsTextField(userDetails.installationPower, {},
-            stringResource(R.string.smartSolarDetailsPower))
+        DetailsTextField(
+            userDetails.requestStatus, {},
+            stringResource(R.string.smartSolarDetailsStatus), info = true
+        )
+        DetailsTextField(
+            userDetails.type, {},
+            stringResource(R.string.smartSolarSelfConsumptionType)
+        )
+        DetailsTextField(
+            userDetails.compensation, {},
+            stringResource(R.string.smartSolarDetailsCompensation)
+        )
+        DetailsTextField(
+            userDetails.installationPower, {},
+            stringResource(R.string.smartSolarDetailsPower)
+        )
     }
 }
 
@@ -162,10 +197,10 @@ fun DetailsTextField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    info : Boolean = false
+    info: Boolean = false
 ) {
     var showRequestStatus by remember { mutableStateOf(false) }
-    if(showRequestStatus){
+    if (showRequestStatus) {
         IberDialogPopup(
             stringResource(R.string.requestStatusTitle),
             stringResource(R.string.requestStatusMessage),
@@ -198,7 +233,7 @@ fun DetailsTextField(
         trailingIcon = {
             if (info) {
                 IconButton(
-                    onClick = {showRequestStatus = true}
+                    onClick = { showRequestStatus = true }
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Info,
