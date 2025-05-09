@@ -50,4 +50,5 @@
     <string name="requestStatusTitle">Estado solicitud autoconsumo</string>
     <string name="requestStatusMessage">El tiempo estimado de activación de tu autoconsumo es de 1 a 2 meses, este variará según tu comunidad autónoma y distribuidora.</string>
     <string name="requestStatusButton">Aceptar</string>
+    <string name="invoicesEmptyList">No se han encontrado facturas.</string>
 </resources>

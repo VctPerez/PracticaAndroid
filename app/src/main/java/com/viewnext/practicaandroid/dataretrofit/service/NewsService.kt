@@ -5,11 +5,15 @@ import io.github.cdimascio.dotenv.dotenv
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-val dotenv = dotenv {
-    directory = "/assets"
-    filename = "env"
+val dotenv = try{
+    dotenv {
+        directory = "/assets"
+        filename = "env"
+    }
+}catch (e: Exception){
+    null
 }
-val API_KEY: String = dotenv["NEWS_API_KEY"]
+val API_KEY: String = dotenv?.get("NEWS_API_KEY")?:""
 
 interface NewsService {
 
