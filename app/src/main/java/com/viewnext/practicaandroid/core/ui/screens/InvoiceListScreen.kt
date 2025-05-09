@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -104,6 +105,16 @@ fun LoadingInvoicesScreen(modifier: Modifier = Modifier){
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoiceList(invoices : List<InvoiceEntity>, modifier: Modifier = Modifier){
+    if(invoices.isEmpty()){
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+
+            Text(stringResource(R.string.invoicesEmptyList),
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.LightGray,
+                modifier = Modifier.padding(top = 20.dp))
+        }
+
+    }
     LazyColumn(modifier = modifier.padding(top = 40.dp)){
         items(invoices){
             InvoiceItem(it)
