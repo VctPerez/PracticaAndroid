@@ -22,6 +22,8 @@ data class InvoiceEntity(
     @SerialName("descEstado")
     val status : String,
 
+    val kwh : Double = 0.0,
+
     @PrimaryKey(autoGenerate = true)
     val id : Int = 0
 )

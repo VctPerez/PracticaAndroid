@@ -75,6 +75,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.dotenv.kotlin)
 
+    implementation("io.github.ehsannarmani:compose-charts:0.1.0")
+
     testImplementation (libs.junit.jupiter)
     testImplementation (libs.junit.jupiter.api)
     testImplementation (libs.junit.jupiter.params)
