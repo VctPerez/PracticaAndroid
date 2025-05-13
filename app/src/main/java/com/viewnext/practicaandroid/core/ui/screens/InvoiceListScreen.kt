@@ -1,8 +1,8 @@
 package com.viewnext.practicaandroid.core.ui.screens
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.Spring
@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -35,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,7 +54,6 @@ import com.viewnext.practicaandroid.core.db.entity.InvoiceEntity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.viewnext.practicaandroid.core.ui.IberDialogPopup
 import com.viewnext.practicaandroid.core.ui.theme.IberGreen
-import com.viewnext.practicaandroid.core.ui.theme.IberGreenGray
 import com.viewnext.practicaandroid.core.ui.viewmodel.InvoiceFilterViewModel
 import ir.ehsannarmani.compose_charts.ColumnChart
 import ir.ehsannarmani.compose_charts.LineChart
@@ -78,16 +79,19 @@ import java.util.Locale
 @Composable
 fun InvoiceListScreen(modifier: Modifier = Modifier) {
 
-    val invoiceFilterViewModel : InvoiceFilterViewModel = viewModel(
+    val invoiceFilterViewModel: InvoiceFilterViewModel = viewModel(
         factory = InvoiceFilterViewModel.Factory,
         key = "InvoiceFilterViewModel"
     )
     val filter = invoiceFilterViewModel.uiState.collectAsState().value
 
-    val invoiceListViewModel : InvoiceListViewModel = viewModel(
+    val invoiceListViewModel: InvoiceListViewModel = viewModel(
         factory = InvoiceListViewModel.Factory
     )
     val state by invoiceListViewModel.uiState.collectAsState()
+
+    val dates = state.invoices.map { it.date.substring(6..9) }.sorted().toSet()
+    val paginationDateIndex = remember { mutableIntStateOf(0) }
 
     LaunchedEffect(filter) {
         invoiceListViewModel.refreshInvoices(filter)
@@ -95,26 +99,48 @@ fun InvoiceListScreen(modifier: Modifier = Modifier) {
 
 //    Log.d("filtro:", invoiceFilterViewModel.uiState.collectAsState().value.filter.toString())
 
-    Column(modifier = modifier
-        .fillMaxSize()
-        .padding(start = 22.dp)){
-        Text(stringResource(R.string.invoicelist_title), style = MaterialTheme.typography.titleLarge)
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(start = 22.dp)
+    ) {
+        Text(
+            stringResource(R.string.invoicelist_title),
+            style = MaterialTheme.typography.titleLarge
+        )
 
-        if(state.isLoading){
+        if (state.isLoading) {
             LoadingInvoicesScreen()
-        } else if(state.error != null){
+        } else if (state.error != null) {
             Text("error + ${state.error}")
         } else {
-            ChartsSection(state.invoices)
-            InvoiceList(state.invoices)
+            val invoicesPaginated = state.invoices.filter {
+                it.date.contains(dates.elementAt(paginationDateIndex.intValue))
+            }
+            ChartsSection(
+                invoicesPaginated,
+                dates,
+                paginationDateIndex.intValue,
+                {
+                    if (paginationDateIndex.intValue > 0)
+                        paginationDateIndex.intValue -= 1
+                },
+                {
+                    if (paginationDateIndex.intValue < dates.size - 1)
+                        paginationDateIndex.intValue += 1
+                }
+            )
+            InvoiceList(invoicesPaginated)
         }
     }
 }
 
 @Composable
-fun LoadingInvoicesScreen(modifier: Modifier = Modifier){
-    Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center)
+fun LoadingInvoicesScreen(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    )
     {
         CircularProgressIndicator(
             modifier = Modifier.width(64.dp),
@@ -127,19 +153,24 @@ fun LoadingInvoicesScreen(modifier: Modifier = Modifier){
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun InvoiceList(invoices : List<InvoiceEntity>, modifier: Modifier = Modifier){
-    if(invoices.isEmpty()){
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+fun InvoiceList(
+    invoices: List<InvoiceEntity>,
+    modifier: Modifier = Modifier
+) {
+    if (invoices.isEmpty()) {
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 
-            Text(stringResource(R.string.invoicesEmptyList),
+            Text(
+                stringResource(R.string.invoicesEmptyList),
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.LightGray,
-                modifier = Modifier.padding(top = 20.dp))
+                modifier = Modifier.padding(top = 20.dp)
+            )
         }
 
     }
-    LazyColumn(modifier = modifier.padding(top = 40.dp)){
-        items(invoices){
+    LazyColumn(modifier = modifier.padding(top = 40.dp)) {
+        items(invoices) {
             InvoiceItem(it)
         }
     }
@@ -147,29 +178,35 @@ fun InvoiceList(invoices : List<InvoiceEntity>, modifier: Modifier = Modifier){
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun InvoiceItem(invoice : InvoiceEntity, modifier: Modifier = Modifier){
+fun InvoiceItem(invoice: InvoiceEntity, modifier: Modifier = Modifier) {
     var showDialog by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxWidth()){
+    Column(modifier = Modifier.fillMaxWidth()) {
 
-        if(showDialog){
+        if (showDialog) {
             IberDialogPopup(
-                stringResource(R.string.infoDialogTitle), stringResource(R.string.infoDialogMessage),
-                "Cerrar", onDismiss = {
+                stringResource(R.string.infoDialogTitle),
+                stringResource(R.string.infoDialogMessage),
+                "Cerrar",
+                onDismiss = {
                     showDialog = false
                 })
         }
 
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 5.dp, bottom = 5.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 5.dp, bottom = 5.dp)
+        )
         {
             Column {
                 Text(invoice.parseDate())
-                if(invoice.status.lowercase() != "pagada"){
-                    Text(stringResource(R.string.invoice_not_paid),
+                if (invoice.status.lowercase() != "pagada") {
+                    Text(
+                        stringResource(R.string.invoice_not_paid),
                         color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyLarge)
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
             }
             Spacer(Modifier.weight(1f))
@@ -191,16 +228,30 @@ fun InvoiceItem(invoice : InvoiceEntity, modifier: Modifier = Modifier){
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChartsSection(invoices : List<InvoiceEntity>, modifier: Modifier = Modifier){
+fun ChartsSection(
+    invoices: List<InvoiceEntity>,
+    dates: Set<String>,
+    currentDateIndex: Int,
+    decreaseDateIndex: () -> Unit,
+    increaseDateIndex: () -> Unit,
+    modifier: Modifier = Modifier
+) {
 
     var showKwhChart by remember { mutableStateOf(false) }
-    if(invoices.isNotEmpty()){
-        Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp,end = 22.dp)){
-            Row (modifier = Modifier.fillMaxWidth(),
+    if (invoices.isNotEmpty()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp, end = 22.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically)
+                verticalAlignment = Alignment.CenterVertically
+            )
             {
-                Text("€",
+                Text(
+                    "€",
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.padding(start = 5.dp, end = 5.dp)
                 )
@@ -215,15 +266,58 @@ fun ChartsSection(invoices : List<InvoiceEntity>, modifier: Modifier = Modifier)
                         uncheckedBorderColor = IberGreen
                     )
                 )
-                Text("Kwh",
+                Text(
+                    "Kwh",
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.padding(start = 5.dp, end = 5.dp)
                 )
             }
 
-            if (showKwhChart){
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            )
+            {
+                IconButton(
+                    onClick = decreaseDateIndex,
+                    enabled = currentDateIndex > 0,
+                    modifier = Modifier.padding(5.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                        contentDescription = "Arrow",
+                        modifier = Modifier
+                            .size(20.dp)
+                            .padding(0.dp),
+                    )
+                }
+                Text(
+                    text = dates.elementAt(currentDateIndex),
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.padding(5.dp)
+                )
+                IconButton(
+                    onClick = increaseDateIndex,
+                    enabled = currentDateIndex < dates.size - 1,
+                    modifier = Modifier.padding(5.dp)
+                )
+                {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = "Arrow",
+                        modifier = Modifier
+                            .size(20.dp)
+                            .padding(0.dp),
+                    )
+                }
+            }
+
+            if (showKwhChart) {
+                //Log.d("ChartInvoices", invoices.toString())
                 InvoiceKwhChart(invoices)
             } else {
+                Log.d("ChartInvoices", invoices.toString())
                 InvoiceAmountChart(invoices)
             }
 //
@@ -234,16 +328,17 @@ fun ChartsSection(invoices : List<InvoiceEntity>, modifier: Modifier = Modifier)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun InvoiceAmountChart(invoices : List<InvoiceEntity>, modifier: Modifier = Modifier){
+fun InvoiceAmountChart(invoices: List<InvoiceEntity>, modifier: Modifier = Modifier) {
 
-    val invoicesMap = remember { getInvoicesAmountPerMonth(invoices) }
+    val invoicesMap = remember(invoices) { getInvoicesAmountPerMonth(invoices) }
+    Log.d("InvoicesMap", invoicesMap.toString())
 
     LineChart(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 20.dp)
             .height(250.dp),
-        data = remember {
+        data = remember(invoices) {
             listOf(
                 Line(
                     label = "Euros",
@@ -288,7 +383,7 @@ fun InvoiceAmountChart(invoices : List<InvoiceEntity>, modifier: Modifier = Modi
         ),
         gridProperties = GridProperties(
             yAxisProperties = GridProperties.AxisProperties(
-                enabled=false
+                enabled = false
             ),
             xAxisProperties = GridProperties.AxisProperties(
                 lineCount = 3
@@ -310,14 +405,15 @@ fun InvoiceKwhChart(
     invoices: List<InvoiceEntity>,
     modifier: Modifier = Modifier,
 ) {
-    val invoicesMap = remember { getInvoicesKwhPerMonth(invoices) }
+    val invoicesMap = remember(invoices){ getInvoicesKwhPerMonth(invoices) }
+    Log.d("InvoicesMap", invoicesMap.toString())
 
     ColumnChart(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 20.dp)
             .height(250.dp),
-        data = remember {
+        data = remember(invoices) {
             invoicesMap.keys.map {
                 Bars(
                     label = it,
@@ -348,15 +444,15 @@ fun InvoiceKwhChart(
         ),
         gridProperties = GridProperties(
             yAxisProperties = GridProperties.AxisProperties(
-                enabled=false
+                enabled = false
             ),
             xAxisProperties = GridProperties.AxisProperties(
-                lineCount=3
+                lineCount = 3
             ),
         ),
-        dividerProperties=DividerProperties(
-            yAxisProperties=LineProperties(
-                enabled=false
+        dividerProperties = DividerProperties(
+            yAxisProperties = LineProperties(
+                enabled = false
             )
         ),
         barProperties = BarProperties(
@@ -374,7 +470,7 @@ fun InvoiceKwhChart(
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
-fun InvoiceListScreenPreview(){
+fun InvoiceListScreenPreview() {
     PracticaAndroidTheme(dynamicColor = false) {
         InvoiceListScreen()
     }
@@ -383,14 +479,14 @@ fun InvoiceListScreenPreview(){
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
-fun NotPaidInvoicePreview(){
+fun NotPaidInvoicePreview() {
     PracticaAndroidTheme(dynamicColor = false) {
         InvoiceItem(
             InvoiceEntity(
-            date = "01/10/2023",
-            amount = 100.0,
-            status = "Pagadan't",
-        )
+                date = "01/10/2023",
+                amount = 100.0,
+                status = "Pagadan't",
+            )
         )
     }
 }
@@ -398,14 +494,14 @@ fun NotPaidInvoicePreview(){
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
-fun PaidInvoicePreview(){
+fun PaidInvoicePreview() {
     PracticaAndroidTheme(dynamicColor = false) {
         InvoiceItem(
             InvoiceEntity(
-            date = "01/10/2023",
-            amount = 100.0,
-            status = "Pagada",
-        )
+                date = "01/10/2023",
+                amount = 100.0,
+                status = "Pagada",
+            )
         )
     }
 }
@@ -424,7 +520,7 @@ fun getInvoicesAmountPerMonth(invoices: List<InvoiceEntity>): Map<String, Double
     val invoicesPerMonth = mutableMapOf<String, Double>()
 
     for (invoice in invoices) {
-        val month = invoice.parseDate().substring(3..5)+ " " + invoice.parseDate().substring(9,11)
+        val month = invoice.parseDate().substring(3..5) + " " + invoice.parseDate().substring(9, 11)
         val amount = invoice.amount
 
         if (invoicesPerMonth.containsKey(month)) {
@@ -442,7 +538,7 @@ fun getInvoicesKwhPerMonth(invoices: List<InvoiceEntity>): Map<String, Double> {
     val invoicesPerMonth = mutableMapOf<String, Double>()
 
     for (invoice in invoices) {
-        val month = invoice.parseDate().substring(3..5)+ " " + invoice.parseDate().substring(9,11)
+        val month = invoice.parseDate().substring(3..5) + " " + invoice.parseDate().substring(9, 11)
         val kwh = invoice.kwh
 
         if (invoicesPerMonth.containsKey(month)) {
