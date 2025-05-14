@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.viewnext.practicaandroid.R
@@ -67,6 +68,7 @@ import ir.ehsannarmani.compose_charts.models.GridProperties
 import ir.ehsannarmani.compose_charts.models.HorizontalIndicatorProperties
 import ir.ehsannarmani.compose_charts.models.IndicatorCount
 import ir.ehsannarmani.compose_charts.models.IndicatorPosition
+import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 import ir.ehsannarmani.compose_charts.models.LabelProperties
 import ir.ehsannarmani.compose_charts.models.Line
 import ir.ehsannarmani.compose_charts.models.LineProperties
@@ -253,7 +255,7 @@ fun ChartsSection(
                 Text(
                     "€",
                     style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.padding(start = 5.dp, end = 5.dp)
+                    modifier = Modifier.padding(start = 25.dp, end = 20.dp)
                 )
                 Switch(
                     checked = showKwhChart,
@@ -269,7 +271,7 @@ fun ChartsSection(
                 Text(
                     "Kwh",
                     style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.padding(start = 5.dp, end = 5.dp)
+                    modifier = Modifier.padding(start = 20.dp, end = 5.dp)
                 )
             }
 
@@ -357,7 +359,9 @@ fun InvoiceAmountChart(invoices: List<InvoiceEntity>, modifier: Modifier = Modif
         }),
         indicatorProperties = HorizontalIndicatorProperties(
             enabled = true,
-            textStyle = MaterialTheme.typography.labelSmall,
+            textStyle = MaterialTheme.typography.labelSmall.copy(
+                color = MaterialTheme.colorScheme.onBackground
+            ),
             padding = 10.dp,
             position = IndicatorPosition.Horizontal.End,
             contentBuilder = {
@@ -369,8 +373,13 @@ fun InvoiceAmountChart(invoices: List<InvoiceEntity>, modifier: Modifier = Modif
         ),
         labelProperties = LabelProperties(
             enabled = true,
-            textStyle = MaterialTheme.typography.bodyMedium,
+            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.onBackground
+            ),
             labels = invoicesMap.keys.toList()
+        ),
+        labelHelperProperties = LabelHelperProperties(
+            textStyle = TextStyle.Default.copy(color = MaterialTheme.colorScheme.onBackground)
         ),
         dotsProperties = DotProperties(
             enabled = true,
@@ -432,7 +441,9 @@ fun InvoiceKwhChart(
         }),
         indicatorProperties = HorizontalIndicatorProperties(
             enabled = true,
-            textStyle = MaterialTheme.typography.labelSmall,
+            textStyle = MaterialTheme.typography.labelSmall.copy(
+                color = MaterialTheme.colorScheme.onBackground
+            ),
             padding = 10.dp,
             position = IndicatorPosition.Horizontal.End,
             contentBuilder = {
@@ -441,6 +452,13 @@ fun InvoiceKwhChart(
             count = IndicatorCount.CountBased(
                 count = 3
             )
+        ),
+        labelHelperProperties = LabelHelperProperties(
+            textStyle = TextStyle.Default.copy(color = MaterialTheme.colorScheme.onBackground)
+        ),
+        labelProperties = LabelProperties(
+            enabled = true,
+            textStyle = TextStyle.Default.copy(color = MaterialTheme.colorScheme.onBackground)
         ),
         gridProperties = GridProperties(
             yAxisProperties = GridProperties.AxisProperties(
@@ -512,7 +530,12 @@ fun InvoiceEntity.parseDate(): String {
     val outputFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.getDefault())
 
     val date = LocalDate.parse(date, inputFormatter)
-    return date.format(outputFormatter)
+
+    val dateFormatted = StringBuilder(date.format(outputFormatter))
+    dateFormatted[3] = dateFormatted[3].uppercaseChar()
+
+
+    return dateFormatted.toString()
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

@@ -14,7 +14,7 @@
     <string name="november_abr">Nov</string>
     <string name="december_abr">Dic</string>
     <string name="invoice_not_paid">Pendiente de pago</string>
-    <string name="invoice_filter">Filtar facturas</string>
+    <string name="invoice_filter">Filtrar facturas</string>
     <string name="datePickerLabel">día/mes/año</string>
     <string name="datePickerFrom">Desde:</string>
     <string name="datePickerTo">Hasta:</string>
